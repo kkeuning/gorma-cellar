@@ -44,13 +44,12 @@ func (m *BottleDB) ListBottle(ctx context.Context) []*app.Bottle {
 // BottleToBottle returns the Bottle representation of Bottle.
 func (m *Bottle) BottleToBottle() *app.Bottle {
 	bottle := &app.Bottle{}
-	var tmp1Collection app.AccountLinkCollection
-	for _, k := range m.Account {
-		tmp1Collection = append(tmp1Collection, k.AccountToAccountLink())
-	}
-	bottle.Links = &app.BottleLinks{Account: tmp1Collection}
+	tmp1 := m.Account.AccountToAccountLink()
+	bottle.Links = &app.BottleLinks{Account: tmp1}
+	bottle.Account = m.Account.AccountToAccount()
 	bottle.ID = m.ID
 	bottle.Name = m.Name
+	bottle.Rating = &m.Rating
 	bottle.Varietal = m.Varietal
 	bottle.Vineyard = m.Vineyard
 	bottle.Vintage = m.Vintage
@@ -59,11 +58,11 @@ func (m *Bottle) BottleToBottle() *app.Bottle {
 }
 
 // OneBottle returns an array of view: default.
-func (m *BottleDB) OneBottle(ctx context.Context) (*app.Bottle, error) {
+func (m *BottleDB) OneBottle(ctx context.Context, id int) (*app.Bottle, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "bottle", "onebottle"}, time.Now())
 
 	var native Bottle
-	err := m.Db.Scopes().Table(m.TableName()).Where("").Find(&native).Error
+	err := m.Db.Scopes().Table(m.TableName()).Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		goa.Error(ctx, "error getting Bottle", "error", err.Error())
@@ -99,16 +98,15 @@ func (m *BottleDB) ListBottleFull(ctx context.Context) []*app.BottleFull {
 // BottleToBottleFull returns the Bottle representation of Bottle.
 func (m *Bottle) BottleToBottleFull() *app.BottleFull {
 	bottle := &app.BottleFull{}
-	var tmp1Collection app.AccountLinkCollection
-	for _, k := range m.Account {
-		tmp1Collection = append(tmp1Collection, k.AccountToAccountLink())
-	}
-	bottle.Links = &app.BottleLinks{Account: tmp1Collection}
+	tmp1 := m.Account.AccountToAccountLink()
+	bottle.Links = &app.BottleLinks{Account: tmp1}
+	bottle.Account = m.Account.AccountToAccount()
 	bottle.Color = m.Color
 	bottle.Country = m.Country
 	bottle.CreatedAt = &m.CreatedAt
 	bottle.ID = m.ID
 	bottle.Name = m.Name
+	bottle.Rating = &m.Rating
 	bottle.Region = m.Region
 	bottle.Review = m.Review
 	bottle.Sweetness = m.Sweetness
@@ -121,11 +119,11 @@ func (m *Bottle) BottleToBottleFull() *app.BottleFull {
 }
 
 // OneBottleFull returns an array of view: full.
-func (m *BottleDB) OneBottleFull(ctx context.Context) (*app.BottleFull, error) {
+func (m *BottleDB) OneBottleFull(ctx context.Context, id int) (*app.BottleFull, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "bottle", "onebottlefull"}, time.Now())
 
 	var native Bottle
-	err := m.Db.Scopes().Table(m.TableName()).Where("").Find(&native).Error
+	err := m.Db.Scopes().Table(m.TableName()).Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		goa.Error(ctx, "error getting Bottle", "error", err.Error())
@@ -161,23 +159,21 @@ func (m *BottleDB) ListBottleTiny(ctx context.Context) []*app.BottleTiny {
 // BottleToBottleTiny returns the Bottle representation of Bottle.
 func (m *Bottle) BottleToBottleTiny() *app.BottleTiny {
 	bottle := &app.BottleTiny{}
-	var tmp1Collection app.AccountLinkCollection
-	for _, k := range m.Account {
-		tmp1Collection = append(tmp1Collection, k.AccountToAccountLink())
-	}
-	bottle.Links = &app.BottleLinks{Account: tmp1Collection}
+	tmp1 := m.Account.AccountToAccountLink()
+	bottle.Links = &app.BottleLinks{Account: tmp1}
 	bottle.ID = m.ID
 	bottle.Name = m.Name
+	bottle.Rating = &m.Rating
 
 	return bottle
 }
 
 // OneBottleTiny returns an array of view: tiny.
-func (m *BottleDB) OneBottleTiny(ctx context.Context) (*app.BottleTiny, error) {
+func (m *BottleDB) OneBottleTiny(ctx context.Context, id int) (*app.BottleTiny, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "bottle", "onebottletiny"}, time.Now())
 
 	var native Bottle
-	err := m.Db.Scopes().Table(m.TableName()).Where("").Find(&native).Error
+	err := m.Db.Scopes().Table(m.TableName()).Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		goa.Error(ctx, "error getting Bottle", "error", err.Error())

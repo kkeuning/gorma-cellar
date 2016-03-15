@@ -13,6 +13,10 @@ var _ = StorageGroup("Cellar", func() {
 		Model("Account", func() {
 			RendersTo(cellar.Account)
 			Description("Cellar Account")
+			Field("id", gorma.Integer, func() {
+				PrimaryKey()
+			})
+			Field("name", gorma.String)
 			HasMany("Bottles", "Bottle")
 		})
 
@@ -22,7 +26,12 @@ var _ = StorageGroup("Cellar", func() {
 				Payload("bottle", "update")
 			})
 			RendersTo(cellar.Bottle)
+			Field("id", gorma.Integer, func() {
+				PrimaryKey()
+			})
+			Field("rating", gorma.Integer)
 			Description("Bottle Model")
+			HasOne("Account")
 		})
 
 	})

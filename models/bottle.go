@@ -21,13 +21,15 @@ import (
 
 // Bottle Model
 type Bottle struct {
-	ID        int `gorm:"primary_key"`
-	AccountID int // has many Bottle
+	ID        int     `gorm:"primary_key"` // primary key
+	Account   Account // has one Account
+	AccountID int     // has many Bottle
 	Color     string
 	Country   *string
 	CreatedAt time.Time
 	DeletedAt *time.Time
 	Name      string
+	Rating    int
 	Region    *string
 	Review    *string
 	Sweetness *int
@@ -64,23 +66,23 @@ func (m *BottleDB) DB() interface{} {
 type BottleStorage interface {
 	DB() interface{}
 	List(ctx context.Context) []Bottle
-	Get(ctx context.Context) (Bottle, error)
+	Get(ctx context.Context, id int) (Bottle, error)
 	Add(ctx context.Context, bottle *Bottle) (*Bottle, error)
 	Update(ctx context.Context, bottle *Bottle) error
-	Delete(ctx context.Context) error
+	Delete(ctx context.Context, id int) error
 
 	ListBottle(ctx context.Context) []*app.Bottle
-	OneBottle(ctx context.Context) (*app.Bottle, error)
+	OneBottle(ctx context.Context, id int) (*app.Bottle, error)
 
 	ListBottleFull(ctx context.Context) []*app.BottleFull
-	OneBottleFull(ctx context.Context) (*app.BottleFull, error)
+	OneBottleFull(ctx context.Context, id int) (*app.BottleFull, error)
 
 	ListBottleTiny(ctx context.Context) []*app.BottleTiny
-	OneBottleTiny(ctx context.Context) (*app.BottleTiny, error)
+	OneBottleTiny(ctx context.Context, id int) (*app.BottleTiny, error)
 
-	UpdateFromCreateBottlePayload(ctx context.Context, payload *app.CreateBottlePayload) error
+	UpdateFromCreateBottlePayload(ctx context.Context, payload *app.CreateBottlePayload, id int) error
 
-	UpdateFromUpdateBottlePayload(ctx context.Context, payload *app.UpdateBottlePayload) error
+	UpdateFromUpdateBottlePayload(ctx context.Context, payload *app.UpdateBottlePayload, id int) error
 }
 
 // TableName overrides the table name settings in Gorm to force a specific table name
@@ -94,11 +96,11 @@ func (m *BottleDB) TableName() string {
 
 // Get returns a single Bottle as a Database Model
 // This is more for use internally, and probably not what you want in  your controllers
-func (m *BottleDB) Get(ctx context.Context) (Bottle, error) {
+func (m *BottleDB) Get(ctx context.Context, id int) (Bottle, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "bottle", "get"}, time.Now())
 
 	var native Bottle
-	err := m.Db.Table(m.TableName()).Where("").Find(&native).Error
+	err := m.Db.Table(m.TableName()).Where("id = ?", id).Find(&native).Error
 	if err == gorm.ErrRecordNotFound {
 		return Bottle{}, nil
 	}
@@ -137,7 +139,7 @@ func (m *BottleDB) Add(ctx context.Context, model *Bottle) (*Bottle, error) {
 func (m *BottleDB) Update(ctx context.Context, model *Bottle) error {
 	defer goa.MeasureSince([]string{"goa", "db", "bottle", "update"}, time.Now())
 
-	obj, err := m.Get(ctx)
+	obj, err := m.Get(ctx, model.ID)
 	if err != nil {
 		return err
 	}
@@ -147,11 +149,12 @@ func (m *BottleDB) Update(ctx context.Context, model *Bottle) error {
 }
 
 // Delete removes a single record.
-func (m *BottleDB) Delete(ctx context.Context) error {
+func (m *BottleDB) Delete(ctx context.Context, id int) error {
 	defer goa.MeasureSince([]string{"goa", "db", "bottle", "delete"}, time.Now())
 
 	var obj Bottle
-	err := m.Db.Delete(&obj).Where("").Error
+
+	err := m.Db.Delete(&obj, id).Error
 
 	if err != nil {
 		goa.Error(ctx, "error retrieving Bottle", "error", err.Error())
@@ -187,11 +190,11 @@ func BottleFromCreateBottlePayload(payload *app.CreateBottlePayload) *Bottle {
 }
 
 // UpdateFromCreateBottlePayload applies non-nil changes from CreateBottlePayload to the model and saves it
-func (m *BottleDB) UpdateFromCreateBottlePayload(ctx context.Context, payload *app.CreateBottlePayload) error {
+func (m *BottleDB) UpdateFromCreateBottlePayload(ctx context.Context, payload *app.CreateBottlePayload, id int) error {
 	defer goa.MeasureSince([]string{"goa", "db", "bottle", "updatefromcreateBottlePayload"}, time.Now())
 
 	var obj Bottle
-	err := m.Db.Table(m.TableName()).Where("").Find(&obj).Error
+	err := m.Db.Table(m.TableName()).Where("id = ?", id).Find(&obj).Error
 	if err != nil {
 		goa.Error(ctx, "error retrieving Bottle", "error", err.Error())
 		return err
@@ -254,11 +257,11 @@ func BottleFromUpdateBottlePayload(payload *app.UpdateBottlePayload) *Bottle {
 }
 
 // UpdateFromUpdateBottlePayload applies non-nil changes from UpdateBottlePayload to the model and saves it
-func (m *BottleDB) UpdateFromUpdateBottlePayload(ctx context.Context, payload *app.UpdateBottlePayload) error {
+func (m *BottleDB) UpdateFromUpdateBottlePayload(ctx context.Context, payload *app.UpdateBottlePayload, id int) error {
 	defer goa.MeasureSince([]string{"goa", "db", "bottle", "updatefromupdateBottlePayload"}, time.Now())
 
 	var obj Bottle
-	err := m.Db.Table(m.TableName()).Where("").Find(&obj).Error
+	err := m.Db.Table(m.TableName()).Where("id = ?", id).Find(&obj).Error
 	if err != nil {
 		goa.Error(ctx, "error retrieving Bottle", "error", err.Error())
 		return err

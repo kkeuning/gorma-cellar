@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/goadesign/goa"
 	"github.com/goadesign/gorma-cellar/app"
+	"github.com/goadesign/gorma-cellar/models"
+	"github.com/jinzhu/gorm"
 )
 
 // AccountController implements the account resource.
@@ -17,25 +19,47 @@ func NewAccountController(service *goa.Service) *AccountController {
 
 // Create runs the create action.
 func (c *AccountController) Create(ctx *app.CreateAccountContext) error {
-	// TBD: implement
-	return nil
+	a := models.Account{}
+	a.Name = ctx.Payload.Name
+	ra, err := adb.Add(ctx.Context, &a)
+	if err != nil {
+		return goa.Response(ctx).Send(ctx, 500, err.Error())
+	}
+	ctx.ResponseData.Header().Set("Location", app.AccountHref(ra.ID))
+	return ctx.Created()
 }
 
 // Delete runs the delete action.
 func (c *AccountController) Delete(ctx *app.DeleteAccountContext) error {
-	// TBD: implement
-	return nil
+	err := adb.Delete(ctx.Context, ctx.AccountID)
+	if err != nil {
+		return goa.Response(ctx).Send(ctx, 500, err.Error())
+	}
+	return ctx.NoContent()
 }
 
 // Show runs the show action.
 func (c *AccountController) Show(ctx *app.ShowAccountContext) error {
-	// TBD: implement
-	res := &app.Account{}
-	return ctx.OK(res)
+	account, err := adb.OneAccount(ctx.Context, ctx.AccountID)
+	if err == gorm.ErrRecordNotFound {
+		return ctx.NotFound()
+	} else if err != nil {
+		return goa.Response(ctx).Send(ctx, 500, err.Error)
+	}
+	account.Href = app.AccountHref(account.ID)
+	return ctx.OK(account)
 }
 
 // Update runs the update action.
 func (c *AccountController) Update(ctx *app.UpdateAccountContext) error {
-	// TBD: implement
-	return nil
+	m, err := adb.Get(ctx.Context, ctx.AccountID)
+	if err == gorm.ErrRecordNotFound {
+		return ctx.NotFound()
+	}
+	m.Name = ctx.Payload.Name
+	err = adb.Update(ctx, &m)
+	if err != nil {
+		return goa.Response(ctx).Send(ctx, 500, err.Error)
+	}
+	return ctx.NoContent()
 }

@@ -46,16 +46,17 @@ func (m *Account) AccountToAccount() *app.Account {
 	account := &app.Account{}
 	account.CreatedAt = &m.CreatedAt
 	account.ID = m.ID
+	account.Name = m.Name
 
 	return account
 }
 
 // OneAccount returns an array of view: default.
-func (m *AccountDB) OneAccount(ctx context.Context) (*app.Account, error) {
+func (m *AccountDB) OneAccount(ctx context.Context, id int) (*app.Account, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "oneaccount"}, time.Now())
 
 	var native Account
-	err := m.Db.Scopes().Table(m.TableName()).Preload("Bottles").Where("").Find(&native).Error
+	err := m.Db.Scopes().Table(m.TableName()).Preload("Bottles").Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		goa.Error(ctx, "error getting Account", "error", err.Error())
@@ -97,11 +98,11 @@ func (m *Account) AccountToAccountLink() *app.AccountLink {
 }
 
 // OneAccountLink returns an array of view: link.
-func (m *AccountDB) OneAccountLink(ctx context.Context) (*app.AccountLink, error) {
+func (m *AccountDB) OneAccountLink(ctx context.Context, id int) (*app.AccountLink, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "oneaccountlink"}, time.Now())
 
 	var native Account
-	err := m.Db.Scopes().Table(m.TableName()).Preload("Bottles").Where("").Find(&native).Error
+	err := m.Db.Scopes().Table(m.TableName()).Preload("Bottles").Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		goa.Error(ctx, "error getting Account", "error", err.Error())
@@ -138,16 +139,17 @@ func (m *AccountDB) ListAccountTiny(ctx context.Context) []*app.AccountTiny {
 func (m *Account) AccountToAccountTiny() *app.AccountTiny {
 	account := &app.AccountTiny{}
 	account.ID = m.ID
+	account.Name = m.Name
 
 	return account
 }
 
 // OneAccountTiny returns an array of view: tiny.
-func (m *AccountDB) OneAccountTiny(ctx context.Context) (*app.AccountTiny, error) {
+func (m *AccountDB) OneAccountTiny(ctx context.Context, id int) (*app.AccountTiny, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "oneaccounttiny"}, time.Now())
 
 	var native Account
-	err := m.Db.Scopes().Table(m.TableName()).Preload("Bottles").Where("").Find(&native).Error
+	err := m.Db.Scopes().Table(m.TableName()).Preload("Bottles").Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		goa.Error(ctx, "error getting Account", "error", err.Error())

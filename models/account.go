@@ -21,10 +21,12 @@ import (
 
 // Cellar Account
 type Account struct {
-	ID        int      `gorm:"primary_key"`
+	ID        int      `gorm:"primary_key"` // primary key
+	BottleID  int      // has one Account
 	Bottles   []Bottle // has many Bottles
 	CreatedAt time.Time
 	DeletedAt *time.Time
+	Name      string
 	UpdatedAt time.Time
 }
 
@@ -55,19 +57,19 @@ func (m *AccountDB) DB() interface{} {
 type AccountStorage interface {
 	DB() interface{}
 	List(ctx context.Context) []Account
-	Get(ctx context.Context) (Account, error)
+	Get(ctx context.Context, id int) (Account, error)
 	Add(ctx context.Context, account *Account) (*Account, error)
 	Update(ctx context.Context, account *Account) error
-	Delete(ctx context.Context) error
+	Delete(ctx context.Context, id int) error
 
 	ListAccount(ctx context.Context) []*app.Account
-	OneAccount(ctx context.Context) (*app.Account, error)
+	OneAccount(ctx context.Context, id int) (*app.Account, error)
 
 	ListAccountLink(ctx context.Context) []*app.AccountLink
-	OneAccountLink(ctx context.Context) (*app.AccountLink, error)
+	OneAccountLink(ctx context.Context, id int) (*app.AccountLink, error)
 
 	ListAccountTiny(ctx context.Context) []*app.AccountTiny
-	OneAccountTiny(ctx context.Context) (*app.AccountTiny, error)
+	OneAccountTiny(ctx context.Context, id int) (*app.AccountTiny, error)
 }
 
 // TableName overrides the table name settings in Gorm to force a specific table name
@@ -81,11 +83,11 @@ func (m *AccountDB) TableName() string {
 
 // Get returns a single Account as a Database Model
 // This is more for use internally, and probably not what you want in  your controllers
-func (m *AccountDB) Get(ctx context.Context) (Account, error) {
+func (m *AccountDB) Get(ctx context.Context, id int) (Account, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "get"}, time.Now())
 
 	var native Account
-	err := m.Db.Table(m.TableName()).Where("").Find(&native).Error
+	err := m.Db.Table(m.TableName()).Where("id = ?", id).Find(&native).Error
 	if err == gorm.ErrRecordNotFound {
 		return Account{}, nil
 	}
@@ -124,7 +126,7 @@ func (m *AccountDB) Add(ctx context.Context, model *Account) (*Account, error) {
 func (m *AccountDB) Update(ctx context.Context, model *Account) error {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "update"}, time.Now())
 
-	obj, err := m.Get(ctx)
+	obj, err := m.Get(ctx, model.ID)
 	if err != nil {
 		return err
 	}
@@ -134,11 +136,12 @@ func (m *AccountDB) Update(ctx context.Context, model *Account) error {
 }
 
 // Delete removes a single record.
-func (m *AccountDB) Delete(ctx context.Context) error {
+func (m *AccountDB) Delete(ctx context.Context, id int) error {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "delete"}, time.Now())
 
 	var obj Account
-	err := m.Db.Delete(&obj).Where("").Error
+
+	err := m.Db.Delete(&obj, id).Error
 
 	if err != nil {
 		goa.Error(ctx, "error retrieving Account", "error", err.Error())
