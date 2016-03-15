@@ -24,17 +24,18 @@ func main() {
 	var err error
 	url := fmt.Sprintf("dbname=gorma user=gorma password=gorma sslmode=disable port=%d host=%s", 5432, "local.docker")
 	fmt.Println(url)
-	logger = log15.New("gorma-cellar", "cellar")
 	db, err = gorm.Open("postgres", url)
 	if err != nil {
 		panic(err)
 	}
 	db.LogMode(true)
+
 	db.DropTable(&models.Account{}, &models.Bottle{})
 	db.AutoMigrate(&models.Account{}, &models.Bottle{})
 
 	adb = models.NewAccountDB(*db)
 	bdb = models.NewBottleDB(*db)
+	db.DB().SetMaxOpenConns(50)
 	// Create service
 	service := goa.New("API")
 
