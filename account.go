@@ -23,7 +23,7 @@ func (c *AccountController) Create(ctx *app.CreateAccountContext) error {
 	a.Name = ctx.Payload.Name
 	ra, err := adb.Add(ctx.Context, &a)
 	if err != nil {
-		return goa.Response(ctx).Send(ctx, 500, err.Error())
+		return goa.ContextResponse(ctx).Send(ctx, 500, err.Error())
 	}
 	ctx.ResponseData.Header().Set("Location", app.AccountHref(ra.ID))
 	return ctx.Created()
@@ -33,7 +33,7 @@ func (c *AccountController) Create(ctx *app.CreateAccountContext) error {
 func (c *AccountController) Delete(ctx *app.DeleteAccountContext) error {
 	err := adb.Delete(ctx.Context, ctx.AccountID)
 	if err != nil {
-		return goa.Response(ctx).Send(ctx, 500, err.Error())
+		return goa.ContextResponse(ctx).Send(ctx, 500, err.Error())
 	}
 	return ctx.NoContent()
 }
@@ -44,7 +44,7 @@ func (c *AccountController) Show(ctx *app.ShowAccountContext) error {
 	if err == gorm.ErrRecordNotFound {
 		return ctx.NotFound()
 	} else if err != nil {
-		return goa.Response(ctx).Send(ctx, 500, err.Error)
+		return goa.ContextResponse(ctx).Send(ctx, 500, err.Error)
 	}
 	account.Href = app.AccountHref(account.ID)
 	return ctx.OK(account)
@@ -59,7 +59,7 @@ func (c *AccountController) Update(ctx *app.UpdateAccountContext) error {
 	m.Name = ctx.Payload.Name
 	err = adb.Update(ctx, &m)
 	if err != nil {
-		return goa.Response(ctx).Send(ctx, 500, err.Error)
+		return goa.ContextResponse(ctx).Send(ctx, 500, err.Error)
 	}
 	return ctx.NoContent()
 }
