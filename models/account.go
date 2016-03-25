@@ -102,7 +102,7 @@ func (m *AccountDB) List(ctx context.Context) []Account {
 	var objs []Account
 	err := m.Db.Table(m.TableName()).Find(&objs).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
-		goa.Error(ctx, "error listing Account", "error", err.Error())
+		goa.LogError(ctx, "error listing Account", "error", err.Error())
 		return objs
 	}
 
@@ -115,7 +115,7 @@ func (m *AccountDB) Add(ctx context.Context, model *Account) (*Account, error) {
 
 	err := m.Db.Create(model).Error
 	if err != nil {
-		goa.Error(ctx, "error updating Account", "error", err.Error())
+		goa.LogError(ctx, "error updating Account", "error", err.Error())
 		return model, err
 	}
 
@@ -144,7 +144,7 @@ func (m *AccountDB) Delete(ctx context.Context, id int) error {
 	err := m.Db.Delete(&obj, id).Error
 
 	if err != nil {
-		goa.Error(ctx, "error retrieving Account", "error", err.Error())
+		goa.LogError(ctx, "error retrieving Account", "error", err.Error())
 		return err
 	}
 

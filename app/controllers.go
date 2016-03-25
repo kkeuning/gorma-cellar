@@ -14,6 +14,7 @@ package app
 
 import (
 	"github.com/goadesign/goa"
+	"github.com/goadesign/goa/cors"
 	"golang.org/x/net/context"
 	"net/http"
 )
@@ -54,6 +55,8 @@ type AccountController interface {
 func MountAccountController(service *goa.Service, ctrl AccountController) {
 	initService(service)
 	var h goa.Handler
+	service.Mux.Handle("OPTIONS", "/cellar/accounts", cors.HandlePreflight(service.Context, handleAccountOrigin))
+	service.Mux.Handle("OPTIONS", "/cellar/accounts/:accountID", cors.HandlePreflight(service.Context, handleAccountOrigin))
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewCreateAccountContext(ctx)
@@ -65,8 +68,11 @@ func MountAccountController(service *goa.Service, ctrl AccountController) {
 		}
 		return ctrl.Create(rctx)
 	}
+	h = handleAccountOrigin(h)
+	h = handleSecurity("admin_pass", h)
 	service.Mux.Handle("POST", "/cellar/accounts", ctrl.MuxHandler("Create", h, unmarshalCreateAccountPayload))
-	service.Info("mount", "ctrl", "Account", "action", "Create", "route", "POST /cellar/accounts")
+	service.LogInfo("mount", "ctrl", "Account", "action", "Create", "route", "POST /cellar/accounts", "security", "admin_pass")
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewDeleteAccountContext(ctx)
 		if err != nil {
@@ -74,8 +80,10 @@ func MountAccountController(service *goa.Service, ctrl AccountController) {
 		}
 		return ctrl.Delete(rctx)
 	}
+	h = handleAccountOrigin(h)
 	service.Mux.Handle("DELETE", "/cellar/accounts/:accountID", ctrl.MuxHandler("Delete", h, nil))
-	service.Info("mount", "ctrl", "Account", "action", "Delete", "route", "DELETE /cellar/accounts/:accountID")
+	service.LogInfo("mount", "ctrl", "Account", "action", "Delete", "route", "DELETE /cellar/accounts/:accountID")
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewShowAccountContext(ctx)
 		if err != nil {
@@ -83,8 +91,10 @@ func MountAccountController(service *goa.Service, ctrl AccountController) {
 		}
 		return ctrl.Show(rctx)
 	}
+	h = handleAccountOrigin(h)
 	service.Mux.Handle("GET", "/cellar/accounts/:accountID", ctrl.MuxHandler("Show", h, nil))
-	service.Info("mount", "ctrl", "Account", "action", "Show", "route", "GET /cellar/accounts/:accountID")
+	service.LogInfo("mount", "ctrl", "Account", "action", "Show", "route", "GET /cellar/accounts/:accountID")
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewUpdateAccountContext(ctx)
 		if err != nil {
@@ -95,8 +105,33 @@ func MountAccountController(service *goa.Service, ctrl AccountController) {
 		}
 		return ctrl.Update(rctx)
 	}
+	h = handleAccountOrigin(h)
 	service.Mux.Handle("PUT", "/cellar/accounts/:accountID", ctrl.MuxHandler("Update", h, unmarshalUpdateAccountPayload))
-	service.Info("mount", "ctrl", "Account", "action", "Update", "route", "PUT /cellar/accounts/:accountID")
+	service.LogInfo("mount", "ctrl", "Account", "action", "Update", "route", "PUT /cellar/accounts/:accountID")
+}
+
+// handleAccountOrigin applies the CORS response headers corresponding to the origin.
+func handleAccountOrigin(h goa.Handler) goa.Handler {
+	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		origin := req.Header.Get("Origin")
+		if origin == "" {
+			// Not a CORS request
+			return h(ctx, rw, req)
+		}
+		if cors.MatchOrigin(origin, "http://swagger.goa.design") {
+			ctx = goa.LogWith(ctx, "origin", origin)
+			rw.Header().Set("Access-Control-Allow-Origin", "http://swagger.goa.design")
+			rw.Header().Set("Vary", "Origin")
+			rw.Header().Set("Access-Control-Max-Age", "600")
+			rw.Header().Set("Access-Control-Allow-Credentials", "true")
+			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
+				// We are handling a preflight request
+				rw.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
+			}
+			return h(ctx, rw, req)
+		}
+		return h(ctx, rw, req)
+	}
 }
 
 // unmarshalCreateAccountPayload unmarshals the request body into the context request data Payload field.
@@ -141,6 +176,10 @@ type BottleController interface {
 func MountBottleController(service *goa.Service, ctrl BottleController) {
 	initService(service)
 	var h goa.Handler
+	service.Mux.Handle("OPTIONS", "/cellar/accounts/:accountID/bottles", cors.HandlePreflight(service.Context, handleBottleOrigin))
+	service.Mux.Handle("OPTIONS", "/cellar/accounts/:accountID/bottles/:bottleID", cors.HandlePreflight(service.Context, handleBottleOrigin))
+	service.Mux.Handle("OPTIONS", "/cellar/accounts/:accountID/bottles/:bottleID/actions/rate", cors.HandlePreflight(service.Context, handleBottleOrigin))
+	service.Mux.Handle("OPTIONS", "/cellar/accounts/:accountID/bottles/:bottleID/watch", cors.HandlePreflight(service.Context, handleBottleOrigin))
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewCreateBottleContext(ctx)
@@ -152,8 +191,10 @@ func MountBottleController(service *goa.Service, ctrl BottleController) {
 		}
 		return ctrl.Create(rctx)
 	}
+	h = handleBottleOrigin(h)
 	service.Mux.Handle("POST", "/cellar/accounts/:accountID/bottles", ctrl.MuxHandler("Create", h, unmarshalCreateBottlePayload))
-	service.Info("mount", "ctrl", "Bottle", "action", "Create", "route", "POST /cellar/accounts/:accountID/bottles")
+	service.LogInfo("mount", "ctrl", "Bottle", "action", "Create", "route", "POST /cellar/accounts/:accountID/bottles")
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewDeleteBottleContext(ctx)
 		if err != nil {
@@ -161,8 +202,10 @@ func MountBottleController(service *goa.Service, ctrl BottleController) {
 		}
 		return ctrl.Delete(rctx)
 	}
+	h = handleBottleOrigin(h)
 	service.Mux.Handle("DELETE", "/cellar/accounts/:accountID/bottles/:bottleID", ctrl.MuxHandler("Delete", h, nil))
-	service.Info("mount", "ctrl", "Bottle", "action", "Delete", "route", "DELETE /cellar/accounts/:accountID/bottles/:bottleID")
+	service.LogInfo("mount", "ctrl", "Bottle", "action", "Delete", "route", "DELETE /cellar/accounts/:accountID/bottles/:bottleID")
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewListBottleContext(ctx)
 		if err != nil {
@@ -170,8 +213,10 @@ func MountBottleController(service *goa.Service, ctrl BottleController) {
 		}
 		return ctrl.List(rctx)
 	}
+	h = handleBottleOrigin(h)
 	service.Mux.Handle("GET", "/cellar/accounts/:accountID/bottles", ctrl.MuxHandler("List", h, nil))
-	service.Info("mount", "ctrl", "Bottle", "action", "List", "route", "GET /cellar/accounts/:accountID/bottles")
+	service.LogInfo("mount", "ctrl", "Bottle", "action", "List", "route", "GET /cellar/accounts/:accountID/bottles")
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewRateBottleContext(ctx)
 		if err != nil {
@@ -182,8 +227,10 @@ func MountBottleController(service *goa.Service, ctrl BottleController) {
 		}
 		return ctrl.Rate(rctx)
 	}
+	h = handleBottleOrigin(h)
 	service.Mux.Handle("PUT", "/cellar/accounts/:accountID/bottles/:bottleID/actions/rate", ctrl.MuxHandler("Rate", h, unmarshalRateBottlePayload))
-	service.Info("mount", "ctrl", "Bottle", "action", "Rate", "route", "PUT /cellar/accounts/:accountID/bottles/:bottleID/actions/rate")
+	service.LogInfo("mount", "ctrl", "Bottle", "action", "Rate", "route", "PUT /cellar/accounts/:accountID/bottles/:bottleID/actions/rate")
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewShowBottleContext(ctx)
 		if err != nil {
@@ -191,8 +238,10 @@ func MountBottleController(service *goa.Service, ctrl BottleController) {
 		}
 		return ctrl.Show(rctx)
 	}
+	h = handleBottleOrigin(h)
 	service.Mux.Handle("GET", "/cellar/accounts/:accountID/bottles/:bottleID", ctrl.MuxHandler("Show", h, nil))
-	service.Info("mount", "ctrl", "Bottle", "action", "Show", "route", "GET /cellar/accounts/:accountID/bottles/:bottleID")
+	service.LogInfo("mount", "ctrl", "Bottle", "action", "Show", "route", "GET /cellar/accounts/:accountID/bottles/:bottleID")
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewUpdateBottleContext(ctx)
 		if err != nil {
@@ -203,8 +252,10 @@ func MountBottleController(service *goa.Service, ctrl BottleController) {
 		}
 		return ctrl.Update(rctx)
 	}
+	h = handleBottleOrigin(h)
 	service.Mux.Handle("PATCH", "/cellar/accounts/:accountID/bottles/:bottleID", ctrl.MuxHandler("Update", h, unmarshalUpdateBottlePayload))
-	service.Info("mount", "ctrl", "Bottle", "action", "Update", "route", "PATCH /cellar/accounts/:accountID/bottles/:bottleID")
+	service.LogInfo("mount", "ctrl", "Bottle", "action", "Update", "route", "PATCH /cellar/accounts/:accountID/bottles/:bottleID")
+
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewWatchBottleContext(ctx)
 		if err != nil {
@@ -212,8 +263,33 @@ func MountBottleController(service *goa.Service, ctrl BottleController) {
 		}
 		return ctrl.Watch(rctx)
 	}
+	h = handleBottleOrigin(h)
 	service.Mux.Handle("GET", "/cellar/accounts/:accountID/bottles/:bottleID/watch", ctrl.MuxHandler("Watch", h, nil))
-	service.Info("mount", "ctrl", "Bottle", "action", "Watch", "route", "GET /cellar/accounts/:accountID/bottles/:bottleID/watch")
+	service.LogInfo("mount", "ctrl", "Bottle", "action", "Watch", "route", "GET /cellar/accounts/:accountID/bottles/:bottleID/watch")
+}
+
+// handleBottleOrigin applies the CORS response headers corresponding to the origin.
+func handleBottleOrigin(h goa.Handler) goa.Handler {
+	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		origin := req.Header.Get("Origin")
+		if origin == "" {
+			// Not a CORS request
+			return h(ctx, rw, req)
+		}
+		if cors.MatchOrigin(origin, "http://swagger.goa.design") {
+			ctx = goa.LogWith(ctx, "origin", origin)
+			rw.Header().Set("Access-Control-Allow-Origin", "http://swagger.goa.design")
+			rw.Header().Set("Vary", "Origin")
+			rw.Header().Set("Access-Control-Max-Age", "600")
+			rw.Header().Set("Access-Control-Allow-Credentials", "true")
+			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
+				// We are handling a preflight request
+				rw.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
+			}
+			return h(ctx, rw, req)
+		}
+		return h(ctx, rw, req)
+	}
 }
 
 // unmarshalCreateBottlePayload unmarshals the request body into the context request data Payload field.

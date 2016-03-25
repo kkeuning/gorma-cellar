@@ -30,7 +30,7 @@ func (m *BottleDB) ListBottle(ctx context.Context) []*app.Bottle {
 	err := m.Db.Scopes().Table(m.TableName()).Preload("Account").Find(&native).Error
 
 	if err != nil {
-		goa.Error(ctx, "error listing Bottle", "error", err.Error())
+		goa.LogError(ctx, "error listing Bottle", "error", err.Error())
 		return objs
 	}
 
@@ -65,7 +65,7 @@ func (m *BottleDB) OneBottle(ctx context.Context, id int) (*app.Bottle, error) {
 	err := m.Db.Scopes().Table(m.TableName()).Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
-		goa.Error(ctx, "error getting Bottle", "error", err.Error())
+		goa.LogError(ctx, "error getting Bottle", "error", err.Error())
 		return nil, err
 	}
 
@@ -84,7 +84,7 @@ func (m *BottleDB) ListBottleFull(ctx context.Context) []*app.BottleFull {
 	err := m.Db.Scopes().Table(m.TableName()).Preload("Account").Find(&native).Error
 
 	if err != nil {
-		goa.Error(ctx, "error listing Bottle", "error", err.Error())
+		goa.LogError(ctx, "error listing Bottle", "error", err.Error())
 		return objs
 	}
 
@@ -126,7 +126,7 @@ func (m *BottleDB) OneBottleFull(ctx context.Context, id int) (*app.BottleFull, 
 	err := m.Db.Scopes().Table(m.TableName()).Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
-		goa.Error(ctx, "error getting Bottle", "error", err.Error())
+		goa.LogError(ctx, "error getting Bottle", "error", err.Error())
 		return nil, err
 	}
 
@@ -145,7 +145,7 @@ func (m *BottleDB) ListBottleTiny(ctx context.Context) []*app.BottleTiny {
 	err := m.Db.Scopes().Table(m.TableName()).Preload("Account").Find(&native).Error
 
 	if err != nil {
-		goa.Error(ctx, "error listing Bottle", "error", err.Error())
+		goa.LogError(ctx, "error listing Bottle", "error", err.Error())
 		return objs
 	}
 
@@ -176,7 +176,7 @@ func (m *BottleDB) OneBottleTiny(ctx context.Context, id int) (*app.BottleTiny, 
 	err := m.Db.Scopes().Table(m.TableName()).Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
-		goa.Error(ctx, "error getting Bottle", "error", err.Error())
+		goa.LogError(ctx, "error getting Bottle", "error", err.Error())
 		return nil, err
 	}
 
