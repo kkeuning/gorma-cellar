@@ -7,7 +7,7 @@ import (
 	"github.com/goadesign/gorma-cellar/app"
 	"github.com/goadesign/gorma-cellar/models"
 	"github.com/goadesign/gorma-cellar/swagger"
-	"github.com/goadesign/middleware"
+	"github.com/goadesign/goa/middleware"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"gopkg.in/inconshreveable/log15.v2"

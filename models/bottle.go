@@ -115,7 +115,7 @@ func (m *BottleDB) List(ctx context.Context) []Bottle {
 	var objs []Bottle
 	err := m.Db.Table(m.TableName()).Find(&objs).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
-		goa.Error(ctx, "error listing Bottle", "error", err.Error())
+		goa.LogError(ctx, "error listing Bottle", "error", err.Error())
 		return objs
 	}
 
@@ -128,7 +128,7 @@ func (m *BottleDB) Add(ctx context.Context, model *Bottle) (*Bottle, error) {
 
 	err := m.Db.Create(model).Error
 	if err != nil {
-		goa.Error(ctx, "error updating Bottle", "error", err.Error())
+		goa.LogError(ctx, "error updating Bottle", "error", err.Error())
 		return model, err
 	}
 
@@ -157,7 +157,7 @@ func (m *BottleDB) Delete(ctx context.Context, id int) error {
 	err := m.Db.Delete(&obj, id).Error
 
 	if err != nil {
-		goa.Error(ctx, "error retrieving Bottle", "error", err.Error())
+		goa.LogError(ctx, "error retrieving Bottle", "error", err.Error())
 		return err
 	}
 
@@ -196,7 +196,7 @@ func (m *BottleDB) UpdateFromCreateBottlePayload(ctx context.Context, payload *a
 	var obj Bottle
 	err := m.Db.Table(m.TableName()).Where("id = ?", id).Find(&obj).Error
 	if err != nil {
-		goa.Error(ctx, "error retrieving Bottle", "error", err.Error())
+		goa.LogError(ctx, "error retrieving Bottle", "error", err.Error())
 		return err
 	}
 	obj.Color = payload.Color
@@ -263,7 +263,7 @@ func (m *BottleDB) UpdateFromUpdateBottlePayload(ctx context.Context, payload *a
 	var obj Bottle
 	err := m.Db.Table(m.TableName()).Where("id = ?", id).Find(&obj).Error
 	if err != nil {
-		goa.Error(ctx, "error retrieving Bottle", "error", err.Error())
+		goa.LogError(ctx, "error retrieving Bottle", "error", err.Error())
 		return err
 	}
 	if payload.Color != nil {

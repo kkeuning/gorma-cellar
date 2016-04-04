@@ -30,7 +30,7 @@ func (m *AccountDB) ListAccount(ctx context.Context) []*app.Account {
 	err := m.Db.Scopes().Table(m.TableName()).Find(&native).Error
 
 	if err != nil {
-		goa.Error(ctx, "error listing Account", "error", err.Error())
+		goa.LogError(ctx, "error listing Account", "error", err.Error())
 		return objs
 	}
 
@@ -59,7 +59,7 @@ func (m *AccountDB) OneAccount(ctx context.Context, id int) (*app.Account, error
 	err := m.Db.Scopes().Table(m.TableName()).Preload("Bottles").Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
-		goa.Error(ctx, "error getting Account", "error", err.Error())
+		goa.LogError(ctx, "error getting Account", "error", err.Error())
 		return nil, err
 	}
 
@@ -78,7 +78,7 @@ func (m *AccountDB) ListAccountLink(ctx context.Context) []*app.AccountLink {
 	err := m.Db.Scopes().Table(m.TableName()).Find(&native).Error
 
 	if err != nil {
-		goa.Error(ctx, "error listing Account", "error", err.Error())
+		goa.LogError(ctx, "error listing Account", "error", err.Error())
 		return objs
 	}
 
@@ -105,7 +105,7 @@ func (m *AccountDB) OneAccountLink(ctx context.Context, id int) (*app.AccountLin
 	err := m.Db.Scopes().Table(m.TableName()).Preload("Bottles").Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
-		goa.Error(ctx, "error getting Account", "error", err.Error())
+		goa.LogError(ctx, "error getting Account", "error", err.Error())
 		return nil, err
 	}
 
@@ -124,7 +124,7 @@ func (m *AccountDB) ListAccountTiny(ctx context.Context) []*app.AccountTiny {
 	err := m.Db.Scopes().Table(m.TableName()).Find(&native).Error
 
 	if err != nil {
-		goa.Error(ctx, "error listing Account", "error", err.Error())
+		goa.LogError(ctx, "error listing Account", "error", err.Error())
 		return objs
 	}
 
@@ -152,7 +152,7 @@ func (m *AccountDB) OneAccountTiny(ctx context.Context, id int) (*app.AccountTin
 	err := m.Db.Scopes().Table(m.TableName()).Preload("Bottles").Where("id = ?", id).Find(&native).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
-		goa.Error(ctx, "error getting Account", "error", err.Error())
+		goa.LogError(ctx, "error getting Account", "error", err.Error())
 		return nil, err
 	}
 
