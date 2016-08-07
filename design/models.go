@@ -31,7 +31,7 @@ var _ = StorageGroup("Cellar", func() {
 			})
 			Field("rating", gorma.Integer)
 			Description("Bottle Model")
-			HasOne("Account")
+			BelongsTo("Account")
 		})
 
 	})

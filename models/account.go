@@ -1,10 +1,11 @@
 //************************************************************************//
 // API "cellar": Models
 //
-// Generated with goagen v0.0.1, command line:
+// Generated with goagen v1.0.0, command line:
 // $ goagen
-// --out=$(GOPATH)/src/github.com/goadesign/gorma-cellar
 // --design=github.com/goadesign/gorma-cellar/design
+// --out=$(GOPATH)/src/github.com/goadesign/gorma-cellar
+// --version=v1.0.0
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//
@@ -22,7 +23,6 @@ import (
 // Cellar Account
 type Account struct {
 	ID        int      `gorm:"primary_key"` // primary key
-	BottleID  int      // has one Account
 	Bottles   []Bottle // has many Bottles
 	CreatedAt time.Time
 	DeletedAt *time.Time
@@ -40,25 +40,25 @@ func (m Account) TableName() string {
 // AccountDB is the implementation of the storage interface for
 // Account.
 type AccountDB struct {
-	Db gorm.DB
+	Db *gorm.DB
 }
 
 // NewAccountDB creates a new storage type.
-func NewAccountDB(db gorm.DB) *AccountDB {
+func NewAccountDB(db *gorm.DB) *AccountDB {
 	return &AccountDB{Db: db}
 }
 
 // DB returns the underlying database.
 func (m *AccountDB) DB() interface{} {
-	return &m.Db
+	return m.Db
 }
 
 // AccountStorage represents the storage interface.
 type AccountStorage interface {
 	DB() interface{}
-	List(ctx context.Context) []Account
-	Get(ctx context.Context, id int) (Account, error)
-	Add(ctx context.Context, account *Account) (*Account, error)
+	List(ctx context.Context) ([]*Account, error)
+	Get(ctx context.Context, id int) (*Account, error)
+	Add(ctx context.Context, account *Account) error
 	Update(ctx context.Context, account *Account) error
 	Delete(ctx context.Context, id int) error
 
@@ -83,43 +83,42 @@ func (m *AccountDB) TableName() string {
 
 // Get returns a single Account as a Database Model
 // This is more for use internally, and probably not what you want in  your controllers
-func (m *AccountDB) Get(ctx context.Context, id int) (Account, error) {
+func (m *AccountDB) Get(ctx context.Context, id int) (*Account, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "get"}, time.Now())
 
 	var native Account
 	err := m.Db.Table(m.TableName()).Where("id = ?", id).Find(&native).Error
 	if err == gorm.ErrRecordNotFound {
-		return Account{}, nil
+		return nil, err
 	}
 
-	return native, err
+	return &native, err
 }
 
 // List returns an array of Account
-func (m *AccountDB) List(ctx context.Context) []Account {
+func (m *AccountDB) List(ctx context.Context) ([]*Account, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "list"}, time.Now())
 
-	var objs []Account
+	var objs []*Account
 	err := m.Db.Table(m.TableName()).Find(&objs).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
-		goa.LogError(ctx, "error listing Account", "error", err.Error())
-		return objs
+		return nil, err
 	}
 
-	return objs
+	return objs, nil
 }
 
-// Add creates a new record.  /// Maybe shouldn't return the model, it's a pointer.
-func (m *AccountDB) Add(ctx context.Context, model *Account) (*Account, error) {
+// Add creates a new record.
+func (m *AccountDB) Add(ctx context.Context, model *Account) error {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "add"}, time.Now())
 
 	err := m.Db.Create(model).Error
 	if err != nil {
-		goa.LogError(ctx, "error updating Account", "error", err.Error())
-		return model, err
+		goa.LogError(ctx, "error adding Account", "error", err.Error())
+		return err
 	}
 
-	return model, err
+	return nil
 }
 
 // Update modifies a single record.
@@ -128,9 +127,10 @@ func (m *AccountDB) Update(ctx context.Context, model *Account) error {
 
 	obj, err := m.Get(ctx, model.ID)
 	if err != nil {
+		goa.LogError(ctx, "error updating Account", "error", err.Error())
 		return err
 	}
-	err = m.Db.Model(&obj).Updates(model).Error
+	err = m.Db.Model(obj).Updates(model).Error
 
 	return err
 }
@@ -144,7 +144,7 @@ func (m *AccountDB) Delete(ctx context.Context, id int) error {
 	err := m.Db.Delete(&obj, id).Error
 
 	if err != nil {
-		goa.LogError(ctx, "error retrieving Account", "error", err.Error())
+		goa.LogError(ctx, "error deleting Account", "error", err.Error())
 		return err
 	}
 

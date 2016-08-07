@@ -1,11 +1,11 @@
 //************************************************************************//
 // API "cellar": Application Resource Href Factories
 //
-// Generated with goagen v0.0.1, command line:
+// Generated with goagen v1.0.0, command line:
 // $ goagen
-// --out=$(GOPATH)/src/github.com/goadesign/gorma-cellar
 // --design=github.com/goadesign/gorma-cellar/design
-// --pkg=app
+// --out=$(GOPATH)/src/github.com/goadesign/gorma-cellar
+// --version=v1.0.0
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//

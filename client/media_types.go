@@ -10,10 +10,11 @@
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//
 
-package app
+package client
 
 import (
 	"github.com/goadesign/goa"
+	"net/http"
 	"time"
 )
 
@@ -94,6 +95,27 @@ func (mt *AccountTiny) Validate() (err error) {
 	return
 }
 
+// DecodeAccount decodes the Account instance encoded in resp body.
+func (c *Client) DecodeAccount(resp *http.Response) (*Account, error) {
+	var decoded Account
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
+// DecodeAccountLink decodes the AccountLink instance encoded in resp body.
+func (c *Client) DecodeAccountLink(resp *http.Response) (*AccountLink, error) {
+	var decoded AccountLink
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
+// DecodeAccountTiny decodes the AccountTiny instance encoded in resp body.
+func (c *Client) DecodeAccountTiny(resp *http.Response) (*AccountTiny, error) {
+	var decoded AccountTiny
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
 // AccountCollection is the media type for an array of Account (default view)
 //
 // Identifier: application/vnd.account+json; type=collection
@@ -152,6 +174,27 @@ func (mt AccountTinyCollection) Validate() (err error) {
 
 	}
 	return
+}
+
+// DecodeAccountCollection decodes the AccountCollection instance encoded in resp body.
+func (c *Client) DecodeAccountCollection(resp *http.Response) (AccountCollection, error) {
+	var decoded AccountCollection
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return decoded, err
+}
+
+// DecodeAccountLinkCollection decodes the AccountLinkCollection instance encoded in resp body.
+func (c *Client) DecodeAccountLinkCollection(resp *http.Response) (AccountLinkCollection, error) {
+	var decoded AccountLinkCollection
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return decoded, err
+}
+
+// DecodeAccountTinyCollection decodes the AccountTinyCollection instance encoded in resp body.
+func (c *Client) DecodeAccountTinyCollection(resp *http.Response) (AccountTinyCollection, error) {
+	var decoded AccountTinyCollection
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return decoded, err
 }
 
 // A bottle of wine (default view)
@@ -400,6 +443,27 @@ func (ut *BottleLinks) Validate() (err error) {
 	return
 }
 
+// DecodeBottle decodes the Bottle instance encoded in resp body.
+func (c *Client) DecodeBottle(resp *http.Response) (*Bottle, error) {
+	var decoded Bottle
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
+// DecodeBottleFull decodes the BottleFull instance encoded in resp body.
+func (c *Client) DecodeBottleFull(resp *http.Response) (*BottleFull, error) {
+	var decoded BottleFull
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
+// DecodeBottleTiny decodes the BottleTiny instance encoded in resp body.
+func (c *Client) DecodeBottleTiny(resp *http.Response) (*BottleTiny, error) {
+	var decoded BottleTiny
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
 // BottleCollection is the media type for an array of Bottle (default view)
 //
 // Identifier: application/vnd.bottle+json; type=collection
@@ -510,4 +574,25 @@ func (ut BottleLinksArray) Validate() (err error) {
 		}
 	}
 	return
+}
+
+// DecodeBottleCollection decodes the BottleCollection instance encoded in resp body.
+func (c *Client) DecodeBottleCollection(resp *http.Response) (BottleCollection, error) {
+	var decoded BottleCollection
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return decoded, err
+}
+
+// DecodeBottleTinyCollection decodes the BottleTinyCollection instance encoded in resp body.
+func (c *Client) DecodeBottleTinyCollection(resp *http.Response) (BottleTinyCollection, error) {
+	var decoded BottleTinyCollection
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return decoded, err
+}
+
+// DecodeErrorResponse decodes the ErrorResponse instance encoded in resp body.
+func (c *Client) DecodeErrorResponse(resp *http.Response) (*goa.ErrorResponse, error) {
+	var decoded goa.ErrorResponse
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
 }

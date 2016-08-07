@@ -6,169 +6,195 @@ consumes:
 - application/x-gob
 definitions:
   Account:
-    description: A tenant account
+    description: A tenant account (default view)
     example:
-      created_at: 2008-01-22T00:07:16-08:00
-      created_by: Vero est mollitia eos voluptas.
-      href: Enim suscipit est explicabo eveniet dolore.
-      id: 7.9748073e+18
-      name: Saepe eum cumque sint veniam.
+      created_at: 2015-09-23T14:51:57-04:00
+      created_by: me@goa.design
+      href: /accounts/1
+      id: 1
+      name: test
     properties:
       created_at:
         description: Date of creation
-        example: 2015-09-23T11:51:57-07:00
+        example: 2015-09-23T14:51:57-04:00
         format: date-time
         type: string
       created_by:
         description: Email of account owner
-        example: loyce.doyle@pollich.com
+        example: me@goa.design
         format: email
         type: string
       href:
         description: API href of account
-        example: Et ut omnis praesentium non.
+        example: /accounts/1
         type: string
       id:
         description: ID of account
-        example: 6.955004e+18
+        example: 1
         format: int64
         type: integer
       name:
         description: Name of account
-        example: Explicabo laboriosam consequatur.
+        example: test
         type: string
     required:
     - id
     - href
     - name
+    - created_at
+    - created_by
     title: 'Mediatype identifier: application/vnd.account+json'
     type: object
-  Bottle:
-    description: A bottle of wine
+  AccountCollection:
+    description: AccountCollection is the media type for an array of Account (default
+      view)
     example:
-      account:
-        created_at: 1988-08-18T23:20:28-07:00
-        created_by: Iure tenetur sapiente et ut.
-        href: Voluptatem voluptatem voluptas veritatis.
-        id: 9.182515e+18
-        name: Sunt ut accusamus soluta.
-      color: Nostrum dolore et maiores quidem iusto.
-      country: Qui aut quaerat id unde sed.
-      created_at: 2001-07-20T06:36:36-07:00
-      href: Ut nisi est.
-      id: 4.0907748e+18
-      name: Quis ipsa occaecati dolorum.
-      rating: 4.824842e+18
-      region: Rem voluptatem.
-      review: Recusandae quam qui labore animi.
-      sweetness: 1.03773165e+18
-      updated_at: 1987-01-07T15:39:20-08:00
-      varietal: Pariatur quam quo laudantium qui ducimus.
-      vineyard: Eos a provident quia omnis iure atque.
-      vintage: 8.3677744e+18
+    - created_at: 2015-09-23T14:51:57-04:00
+      created_by: me@goa.design
+      href: /accounts/1
+      id: 1
+      name: test
+    items:
+      $ref: '#/definitions/Account'
+    title: 'Mediatype identifier: application/vnd.account+json; type=collection'
+    type: array
+  AccountLink:
+    description: A tenant account (default view)
+    example:
+      created_at: 2015-09-23T14:51:57-04:00
+      created_by: me@goa.design
+      href: /accounts/1
+      id: 1
+      name: test
     properties:
-      account:
-        description: Account that owns bottle
-        example:
-          created_at: 1970-12-24T20:38:00-08:00
-          created_by: Earum repellat eos.
-          href: Corrupti corrupti qui.
-          id: 6.34671e+18
-          name: Laboriosam accusamus.
-        properties:
-          created_at:
-            description: Date of creation
-            example: 2015-09-23T11:51:57-07:00
-            format: date-time
-            type: string
-          created_by:
-            description: Email of account owner
-            example: loyce.doyle@pollich.com
-            format: email
-            type: string
-          href:
-            description: API href of account
-            example: Et ut omnis praesentium non.
-            type: string
-          id:
-            description: ID of account
-            example: 6.955004e+18
-            format: int64
-            type: integer
-          name:
-            description: Name of account
-            example: Explicabo laboriosam consequatur.
-            type: string
-        required:
-        - id
-        - href
-        - name
-        type: object
-      color:
-        enum:
-        - red
-        - white
-        - rose
-        - yellow
-        - sparkling
-        example: yellow
-        type: string
-      country:
-        example: q5
-        minLength: 2
-        type: string
       created_at:
         description: Date of creation
-        example: 2002-01-26T17:01:26-08:00
+        example: 2015-09-23T14:51:57-04:00
         format: date-time
         type: string
+      created_by:
+        description: Email of account owner
+        example: me@goa.design
+        format: email
+        type: string
       href:
-        description: API href of bottle
-        example: Magni tempora.
+        description: API href of account
+        example: /accounts/1
         type: string
       id:
-        description: ID of bottle
-        example: 7.5550226e+18
+        description: ID of account
+        example: 1
         format: int64
         type: integer
       name:
-        example: 7hb
+        description: Name of account
+        example: test
+        type: string
+    required:
+    - id
+    - href
+    - name
+    - created_at
+    - created_by
+    title: 'Mediatype identifier: application/vnd.account+json'
+    type: object
+  AccountTiny:
+    description: A tenant account (default view)
+    example:
+      created_at: 2015-09-23T14:51:57-04:00
+      created_by: me@goa.design
+      href: /accounts/1
+      id: 1
+      name: test
+    properties:
+      created_at:
+        description: Date of creation
+        example: 2015-09-23T14:51:57-04:00
+        format: date-time
+        type: string
+      created_by:
+        description: Email of account owner
+        example: me@goa.design
+        format: email
+        type: string
+      href:
+        description: API href of account
+        example: /accounts/1
+        type: string
+      id:
+        description: ID of account
+        example: 1
+        format: int64
+        type: integer
+      name:
+        description: Name of account
+        example: test
+        type: string
+    required:
+    - id
+    - href
+    - name
+    - created_at
+    - created_by
+    title: 'Mediatype identifier: application/vnd.account+json'
+    type: object
+  Bottle:
+    description: A bottle of wine (default view)
+    example:
+      account:
+        created_at: 2015-09-23T14:51:57-04:00
+        created_by: me@goa.design
+        href: /accounts/1
+        id: 1
+        name: test
+      color: white
+      country: USA
+      created_at: 1980-11-24T18:54:06-05:00
+      href: /accounts/1/bottles/1
+      id: 1
+      name: Number 8
+      rating: 3
+      region: Napa Valley
+      review: Great and inexpensive
+      sweetness: 1
+      updated_at: 2003-07-25T07:17:15-04:00
+      varietal: Merlot
+      vineyard: Asti
+      vintage: 2012
+    properties:
+      account:
+        $ref: '#/definitions/AccountTiny'
+      href:
+        description: API href of bottle
+        example: /accounts/1/bottles/1
+        type: string
+      id:
+        description: ID of bottle
+        example: 1
+        format: int64
+        type: integer
+      links:
+        $ref: '#/definitions/BottleLinks'
+      name:
+        example: Number 8
         minLength: 2
         type: string
       rating:
         description: Rating of bottle between 1 and 5
-        example: 4
-        maximum: 5
-        minimum: 1
-        type: integer
-      region:
-        example: Consequuntur recusandae.
-        type: string
-      review:
-        example: bzvfxy6
-        maxLength: 300
-        minLength: 3
-        type: string
-      sweetness:
         example: 3
         maximum: 5
         minimum: 1
         type: integer
-      updated_at:
-        description: Date of last update
-        example: 1994-04-05T12:08:05-07:00
-        format: date-time
-        type: string
       varietal:
-        example: jue8
+        example: Merlot
         minLength: 4
         type: string
       vineyard:
-        example: rba
+        example: Asti
         minLength: 2
         type: string
       vintage:
-        example: 2010
+        example: 2012
         maximum: 2020
         minimum: 1900
         type: integer
@@ -179,180 +205,94 @@ definitions:
     - vineyard
     - varietal
     - vintage
-    - color
     title: 'Mediatype identifier: application/vnd.bottle+json'
     type: object
   BottleCollection:
+    description: BottleCollection is the media type for an array of Bottle (default
+      view)
     example:
     - account:
-        created_at: 1997-11-14T12:42:49-08:00
-        created_by: Optio corporis quam delectus.
-        href: Exercitationem alias est dolores.
-        id: 3.3478612e+18
-        name: Ducimus expedita in quam eos distinctio.
-      color: Ut molestiae possimus.
-      country: Aliquam itaque quam beatae veniam quaerat sint.
-      created_at: 2000-07-18T03:19:44-07:00
-      href: Sit qui ut delectus.
-      id: 7.6403293e+18
-      name: Nulla architecto magni eos tempora sapiente.
-      rating: 5.4533204e+18
-      region: Beatae eveniet et tempora nobis enim.
-      review: Dolorum libero qui.
-      sweetness: 2.5772294e+18
-      updated_at: 1980-11-29T23:07:41-08:00
-      varietal: Iste dolorem officiis aut magnam commodi.
-      vineyard: Voluptatem deserunt cupiditate eveniet repellat qui.
-      vintage: 2.0464565e+18
+        created_at: 2015-09-23T14:51:57-04:00
+        created_by: me@goa.design
+        href: /accounts/1
+        id: 1
+        name: test
+      href: /accounts/1/bottles/1
+      id: 1
+      links:
+        account:
+          created_at: 2015-09-23T14:51:57-04:00
+          created_by: me@goa.design
+          href: /accounts/1
+          id: 1
+          name: test
+      name: Number 8
+      rating: 3
+      varietal: Merlot
+      vineyard: Asti
+      vintage: 2012
+    - account:
+        created_at: 2015-09-23T14:51:57-04:00
+        created_by: me@goa.design
+        href: /accounts/1
+        id: 1
+        name: test
+      href: /accounts/1/bottles/1
+      id: 1
+      links:
+        account:
+          created_at: 2015-09-23T14:51:57-04:00
+          created_by: me@goa.design
+          href: /accounts/1
+          id: 1
+          name: test
+      name: Number 8
+      rating: 3
+      varietal: Merlot
+      vineyard: Asti
+      vintage: 2012
+    - account:
+        created_at: 2015-09-23T14:51:57-04:00
+        created_by: me@goa.design
+        href: /accounts/1
+        id: 1
+        name: test
+      href: /accounts/1/bottles/1
+      id: 1
+      links:
+        account:
+          created_at: 2015-09-23T14:51:57-04:00
+          created_by: me@goa.design
+          href: /accounts/1
+          id: 1
+          name: test
+      name: Number 8
+      rating: 3
+      varietal: Merlot
+      vineyard: Asti
+      vintage: 2012
     items:
-      example:
-        account:
-          created_at: 2014-10-24T15:06:00-07:00
-          created_by: Aut non necessitatibus ab repellendus quidem modi.
-          href: Incidunt recusandae.
-          id: 2.8548622e+17
-          name: Voluptatem ut qui.
-        color: Sunt sit dolor magnam dolores.
-        country: Quibusdam aut quibusdam.
-        created_at: 1996-10-24T19:50:17-07:00
-        href: Quis aut rem vel veritatis aut.
-        id: 3.4591565e+18
-        name: Aut aut.
-        rating: 5.128319e+18
-        region: Aliquid facere.
-        review: Placeat ea vel molestiae incidunt earum.
-        sweetness: 1.3609932e+18
-        updated_at: 1982-09-15T22:09:33-07:00
-        varietal: Iusto aut officia rerum.
-        vineyard: Qui natus et aut soluta minus.
-        vintage: 6.290062e+18
-      properties:
-        account:
-          description: Account that owns bottle
-          example:
-            created_at: 1970-12-24T20:38:00-08:00
-            created_by: Earum repellat eos.
-            href: Corrupti corrupti qui.
-            id: 6.34671e+18
-            name: Laboriosam accusamus.
-          properties:
-            created_at:
-              description: Date of creation
-              example: 2015-09-23T11:51:57-07:00
-              format: date-time
-              type: string
-            created_by:
-              description: Email of account owner
-              example: loyce.doyle@pollich.com
-              format: email
-              type: string
-            href:
-              description: API href of account
-              example: Et ut omnis praesentium non.
-              type: string
-            id:
-              description: ID of account
-              example: 6.955004e+18
-              format: int64
-              type: integer
-            name:
-              description: Name of account
-              example: Explicabo laboriosam consequatur.
-              type: string
-          required:
-          - id
-          - href
-          - name
-          type: object
-        color:
-          enum:
-          - red
-          - white
-          - rose
-          - yellow
-          - sparkling
-          example: yellow
-          type: string
-        country:
-          example: q5
-          minLength: 2
-          type: string
-        created_at:
-          description: Date of creation
-          example: 2002-01-26T17:01:26-08:00
-          format: date-time
-          type: string
-        href:
-          description: API href of bottle
-          example: Magni tempora.
-          type: string
-        id:
-          description: ID of bottle
-          example: 7.5550226e+18
-          format: int64
-          type: integer
-        name:
-          example: 7hb
-          minLength: 2
-          type: string
-        rating:
-          description: Rating of bottle between 1 and 5
-          example: 4
-          maximum: 5
-          minimum: 1
-          type: integer
-        region:
-          example: Consequuntur recusandae.
-          type: string
-        review:
-          example: bzvfxy6
-          maxLength: 300
-          minLength: 3
-          type: string
-        sweetness:
-          example: 3
-          maximum: 5
-          minimum: 1
-          type: integer
-        updated_at:
-          description: Date of last update
-          example: 1994-04-05T12:08:05-07:00
-          format: date-time
-          type: string
-        varietal:
-          example: jue8
-          minLength: 4
-          type: string
-        vineyard:
-          example: rba
-          minLength: 2
-          type: string
-        vintage:
-          example: 2010
-          maximum: 2020
-          minimum: 1900
-          type: integer
-      required:
-      - id
-      - href
-      - name
-      - vineyard
-      - varietal
-      - vintage
-      - color
-      type: object
+      $ref: '#/definitions/Bottle'
     title: 'Mediatype identifier: application/vnd.bottle+json; type=collection'
     type: array
-  CreateAccountPayload:
+  BottleLinks:
+    description: BottleLinks contains links to related resources of Bottle.
     properties:
-      name:
-        description: Name of account
-        type: string
-    required:
-    - name
-    title: CreateAccountPayload
+      account:
+        $ref: '#/definitions/AccountLink'
+    title: BottleLinks
     type: object
-  CreateBottlePayload:
+  BottlePayload:
+    example:
+      color: white
+      country: USA
+      name: Number 8
+      region: Napa Valley
+      review: Great and inexpensive
+      sweetness: 1
+      varietal: Merlot
+      vineyard: Asti
+      vintage: 2012
     properties:
       color:
         enum:
@@ -361,39 +301,108 @@ definitions:
         - rose
         - yellow
         - sparkling
-        example: yellow
+        example: white
         type: string
       country:
-        example: rm
+        example: USA
         minLength: 2
         type: string
       name:
-        example: 39el
+        example: Number 8
         minLength: 2
         type: string
       region:
-        example: Culpa incidunt omnis nobis nobis accusamus qui.
+        example: Napa Valley
         type: string
       review:
-        example: hj6oh0sj8
+        example: Great and inexpensive
         maxLength: 300
         minLength: 3
         type: string
       sweetness:
-        example: 4
+        example: 1
         maximum: 5
         minimum: 1
         type: integer
       varietal:
-        example: qh8o0
+        example: Merlot
         minLength: 4
         type: string
       vineyard:
-        example: ok7m
+        example: Asti
         minLength: 2
         type: string
       vintage:
-        example: 2001
+        example: 2012
+        maximum: 2020
+        minimum: 1900
+        type: integer
+    title: BottlePayload
+    type: object
+  CreateAccountPayload:
+    example:
+      name: test
+    properties:
+      name:
+        description: Name of account
+        example: test
+        type: string
+    required:
+    - name
+    title: CreateAccountPayload
+    type: object
+  CreateBottlePayload:
+    example:
+      color: white
+      country: USA
+      name: Number 8
+      region: Napa Valley
+      review: Great and inexpensive
+      sweetness: 1
+      varietal: Merlot
+      vineyard: Asti
+      vintage: 2012
+    properties:
+      color:
+        enum:
+        - red
+        - white
+        - rose
+        - yellow
+        - sparkling
+        example: white
+        type: string
+      country:
+        example: USA
+        minLength: 2
+        type: string
+      name:
+        example: Number 8
+        minLength: 2
+        type: string
+      region:
+        example: Napa Valley
+        type: string
+      review:
+        example: Great and inexpensive
+        maxLength: 300
+        minLength: 3
+        type: string
+      sweetness:
+        example: 1
+        maximum: 5
+        minimum: 1
+        type: integer
+      varietal:
+        example: Merlot
+        minLength: 4
+        type: string
+      vineyard:
+        example: Asti
+        minLength: 2
+        type: string
+      vintage:
+        example: 2012
         maximum: 2020
         minimum: 1900
         type: integer
@@ -406,9 +415,12 @@ definitions:
     title: CreateBottlePayload
     type: object
   RateBottlePayload:
+    example:
+      rating: 3
     properties:
       rating:
         description: Rating of bottle between 1 and 5
+        example: 3
         maximum: 5
         minimum: 1
         type: integer
@@ -417,56 +429,58 @@ definitions:
     title: RateBottlePayload
     type: object
   UpdateAccountPayload:
+    example:
+      name: test
     properties:
       name:
         description: Name of account
+        example: test
         type: string
     required:
     - name
     title: UpdateAccountPayload
     type: object
-  UpdateBottlePayload:
+  error:
+    description: Error response media type (default view)
+    example:
+      code: invalid_value
+      detail: Value of ID must be an integer
+      id: 3F1FKVRR
+      meta:
+        timestamp: 1.458609e+09
+      status: "400"
     properties:
-      color:
-        enum:
-        - red
-        - white
-        - rose
-        - yellow
-        - sparkling
+      code:
+        description: an application-specific error code, expressed as a string value.
+        example: invalid_value
         type: string
-      country:
-        minLength: 2
+      detail:
+        description: a human-readable explanation specific to this occurrence of the
+          problem.
+        example: Value of ID must be an integer
         type: string
-      name:
-        minLength: 2
+      id:
+        description: a unique identifier for this particular occurrence of the problem.
+        example: 3F1FKVRR
         type: string
-      region:
+      meta:
+        additionalProperties: true
+        description: a meta object containing non-standard meta-information about
+          the error.
+        example:
+          timestamp: 1.458609e+09
+        type: object
+      status:
+        description: the HTTP status code applicable to this problem, expressed as
+          a string value.
+        example: "400"
         type: string
-      review:
-        maxLength: 300
-        minLength: 3
-        type: string
-      sweetness:
-        maximum: 5
-        minimum: 1
-        type: integer
-      varietal:
-        minLength: 4
-        type: string
-      vineyard:
-        minLength: 2
-        type: string
-      vintage:
-        maximum: 2020
-        minimum: 1900
-        type: integer
-    title: UpdateBottlePayload
+    title: 'Mediatype identifier: application/vnd.goa.error'
     type: object
 externalDocs:
   description: goa guide
   url: http://goa.design/getting-started.html
-host: cellar.goa.design
+host: goa-cellar.appspot.com
 info:
   contact:
     email: admin@goa.design
@@ -479,7 +493,34 @@ info:
   title: The virtual wine cellar
   version: ""
 paths:
+  /_ah/health:
+    get:
+      description: Perform health check.
+      operationId: health#health
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - http
+      summary: health health
+      tags:
+      - health
   /accounts:
+    get:
+      description: Retrieve all accounts.
+      operationId: account#list
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AccountCollection'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: list account
+      tags:
+      - account
     post:
       description: Create new account
       operationId: account#create
@@ -497,10 +538,15 @@ paths:
               description: href to created resource
               pattern: /accounts/[0-9]+
               type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
       schemes:
       - http
-      security:
-      - admin_pass: []
+      summary: create account
+      tags:
+      - account
   /accounts/{accountID}:
     delete:
       operationId: account#delete
@@ -513,10 +559,17 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
       - http
+      summary: delete account
+      tags:
+      - account
     get:
       description: Retrieve account with given id. IDs 1 and 2 pre-exist in the system.
       operationId: account#show
@@ -531,10 +584,17 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Account'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
       - http
+      summary: show account
+      tags:
+      - account
     put:
       description: Change account name
       operationId: account#update
@@ -552,10 +612,17 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
       - http
+      summary: update account
+      tags:
+      - account
   /accounts/{accountID}/bottles:
     get:
       description: List all bottles in account optionally filtering by year
@@ -569,9 +636,7 @@ paths:
       - description: Filter by years
         in: query
         items:
-          items:
-            type: integer
-          type: array
+          type: integer
         name: years
         required: false
         type: array
@@ -580,10 +645,17 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/BottleCollection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
       - http
+      summary: list bottle
+      tags:
+      - bottle
     post:
       description: Record new bottle
       operationId: bottle#create
@@ -606,8 +678,17 @@ paths:
               description: href to created resource
               pattern: ^/accounts/[0-9]+/bottles/[0-9]+$
               type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "404":
+          description: Not Found
       schemes:
       - http
+      summary: create bottle
+      tags:
+      - bottle
   /accounts/{accountID}/bottles/{bottleID}:
     delete:
       operationId: bottle#delete
@@ -624,10 +705,17 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
       - http
+      summary: delete bottle
+      tags:
+      - bottle
     get:
       description: Retrieve bottle with given id
       operationId: bottle#show
@@ -646,10 +734,17 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Bottle'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
       - http
+      summary: show bottle
+      tags:
+      - bottle
     patch:
       operationId: bottle#update
       parameters:
@@ -666,14 +761,21 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/UpdateBottlePayload'
+          $ref: '#/definitions/BottlePayload'
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
       - http
+      summary: update bottle
+      tags:
+      - bottle
   /accounts/{accountID}/bottles/{bottleID}/actions/rate:
     put:
       operationId: bottle#rate
@@ -695,10 +797,17 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
       - http
+      summary: rate bottle
+      tags:
+      - bottle
   /accounts/{accountID}/bottles/{bottleID}/watch:
     get:
       description: Retrieve bottle with given id
@@ -716,8 +825,15 @@ paths:
       responses:
         "101":
           description: Switching Protocols
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
       schemes:
       - ws
+      summary: watch bottle
+      tags:
+      - bottle
 produces:
 - application/json
 - application/xml
@@ -736,13 +852,4 @@ responses:
     description: Switching Protocols
 schemes:
 - http
-securityDefinitions:
-  admin_pass:
-    description: |
-      Basic authentication method, for global admin authentication.
-
-      Here are very secret credentials:
-      * username: wine
-      * password: lover
-    type: basic
 swagger: "2.0"

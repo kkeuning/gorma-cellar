@@ -24,11 +24,11 @@ func NewAccountController(service *goa.Service) *AccountController {
 func (c *AccountController) Create(ctx *app.CreateAccountContext) error {
 	a := models.Account{}
 	a.Name = ctx.Payload.Name
-	ra, err := adb.Add(ctx.Context, &a)
+	err := adb.Add(ctx.Context, &a)
 	if err != nil {
 		return ErrDatabaseError(err)
 	}
-	ctx.ResponseData.Header().Set("Location", app.AccountHref(ra.ID))
+	ctx.ResponseData.Header().Set("Location", app.AccountHref(a.ID))
 	return ctx.Created()
 }
 
@@ -53,6 +53,13 @@ func (c *AccountController) Show(ctx *app.ShowAccountContext) error {
 	return ctx.OK(account)
 }
 
+// List
+func (c *AccountController) List(ctx *app.ListAccountContext) error {
+	accounts := adb.ListAccount(ctx.Context)
+	return ctx.OK(accounts)
+
+}
+
 // Update runs the update action.
 func (c *AccountController) Update(ctx *app.UpdateAccountContext) error {
 	m, err := adb.Get(ctx.Context, ctx.AccountID)
@@ -60,7 +67,7 @@ func (c *AccountController) Update(ctx *app.UpdateAccountContext) error {
 		return ctx.NotFound()
 	}
 	m.Name = ctx.Payload.Name
-	err = adb.Update(ctx, &m)
+	err = adb.Update(ctx, m)
 	if err != nil {
 		return ErrDatabaseError(err)
 	}

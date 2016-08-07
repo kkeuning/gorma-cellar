@@ -1,10 +1,11 @@
 //************************************************************************//
 // API "cellar": Model Helpers
 //
-// Generated with goagen v0.0.1, command line:
+// Generated with goagen v1.0.0, command line:
 // $ goagen
-// --out=$(GOPATH)/src/github.com/goadesign/gorma-cellar
 // --design=github.com/goadesign/gorma-cellar/design
+// --out=$(GOPATH)/src/github.com/goadesign/gorma-cellar
+// --version=v1.0.0
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//
@@ -41,17 +42,17 @@ func (m *AccountDB) ListAccount(ctx context.Context) []*app.Account {
 	return objs
 }
 
-// AccountToAccount returns the Account representation of Account.
+// AccountToAccount loads a Account and builds the default view of media type Account.
 func (m *Account) AccountToAccount() *app.Account {
 	account := &app.Account{}
-	account.CreatedAt = &m.CreatedAt
+	account.CreatedAt = m.CreatedAt
 	account.ID = m.ID
 	account.Name = m.Name
 
 	return account
 }
 
-// OneAccount returns an array of view: default.
+// OneAccount loads a Account and builds the default view of media type Account.
 func (m *AccountDB) OneAccount(ctx context.Context, id int) (*app.Account, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "oneaccount"}, time.Now())
 
@@ -89,7 +90,7 @@ func (m *AccountDB) ListAccountLink(ctx context.Context) []*app.AccountLink {
 	return objs
 }
 
-// AccountToAccountLink returns the Account representation of Account.
+// AccountToAccountLink loads a Account and builds the link view of media type Account.
 func (m *Account) AccountToAccountLink() *app.AccountLink {
 	account := &app.AccountLink{}
 	account.ID = m.ID
@@ -97,7 +98,7 @@ func (m *Account) AccountToAccountLink() *app.AccountLink {
 	return account
 }
 
-// OneAccountLink returns an array of view: link.
+// OneAccountLink loads a Account and builds the link view of media type Account.
 func (m *AccountDB) OneAccountLink(ctx context.Context, id int) (*app.AccountLink, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "oneaccountlink"}, time.Now())
 
@@ -135,7 +136,7 @@ func (m *AccountDB) ListAccountTiny(ctx context.Context) []*app.AccountTiny {
 	return objs
 }
 
-// AccountToAccountTiny returns the Account representation of Account.
+// AccountToAccountTiny loads a Account and builds the tiny view of media type Account.
 func (m *Account) AccountToAccountTiny() *app.AccountTiny {
 	account := &app.AccountTiny{}
 	account.ID = m.ID
@@ -144,7 +145,7 @@ func (m *Account) AccountToAccountTiny() *app.AccountTiny {
 	return account
 }
 
-// OneAccountTiny returns an array of view: tiny.
+// OneAccountTiny loads a Account and builds the tiny view of media type Account.
 func (m *AccountDB) OneAccountTiny(ctx context.Context, id int) (*app.AccountTiny, error) {
 	defer goa.MeasureSince([]string{"goa", "db", "account", "oneaccounttiny"}, time.Now())
 
