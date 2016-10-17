@@ -81,9 +81,9 @@ type BottleStorage interface {
 	ListBottleTiny(ctx context.Context, accountID int) []*app.BottleTiny
 	OneBottleTiny(ctx context.Context, id int, accountID int) (*app.BottleTiny, error)
 
-	UpdateFromBottlePayload(ctx context.Context, payload *app.BottlePayload, id int) error
-
 	UpdateFromCreateBottlePayload(ctx context.Context, payload *app.CreateBottlePayload, id int) error
+
+	UpdateFromUpdateBottlePayload(ctx context.Context, payload *app.UpdateBottlePayload, id int) error
 }
 
 // TableName overrides the table name settings in Gorm to force a specific table name
@@ -178,83 +178,6 @@ func (m *BottleDB) Delete(ctx context.Context, id int) error {
 	return nil
 }
 
-// BottleFromBottlePayload Converts source BottlePayload to target Bottle model
-// only copying the non-nil fields from the source.
-func BottleFromBottlePayload(payload *app.BottlePayload) *Bottle {
-	bottle := &Bottle{}
-	if payload.Color != nil {
-		bottle.Color = *payload.Color
-	}
-	if payload.Country != nil {
-		bottle.Country = payload.Country
-	}
-	if payload.Name != nil {
-		bottle.Name = *payload.Name
-	}
-	if payload.Region != nil {
-		bottle.Region = payload.Region
-	}
-	if payload.Review != nil {
-		bottle.Review = payload.Review
-	}
-	if payload.Sweetness != nil {
-		bottle.Sweetness = payload.Sweetness
-	}
-	if payload.Varietal != nil {
-		bottle.Varietal = *payload.Varietal
-	}
-	if payload.Vineyard != nil {
-		bottle.Vineyard = *payload.Vineyard
-	}
-	if payload.Vintage != nil {
-		bottle.Vintage = *payload.Vintage
-	}
-
-	return bottle
-}
-
-// UpdateFromBottlePayload applies non-nil changes from BottlePayload to the model and saves it
-func (m *BottleDB) UpdateFromBottlePayload(ctx context.Context, payload *app.BottlePayload, id int) error {
-	defer goa.MeasureSince([]string{"goa", "db", "bottle", "updatefrombottlePayload"}, time.Now())
-
-	var obj Bottle
-	err := m.Db.Table(m.TableName()).Where("id = ?", id).Find(&obj).Error
-	if err != nil {
-		goa.LogError(ctx, "error retrieving Bottle", "error", err.Error())
-		return err
-	}
-	if payload.Color != nil {
-		obj.Color = *payload.Color
-	}
-	if payload.Country != nil {
-		obj.Country = payload.Country
-	}
-	if payload.Name != nil {
-		obj.Name = *payload.Name
-	}
-	if payload.Region != nil {
-		obj.Region = payload.Region
-	}
-	if payload.Review != nil {
-		obj.Review = payload.Review
-	}
-	if payload.Sweetness != nil {
-		obj.Sweetness = payload.Sweetness
-	}
-	if payload.Varietal != nil {
-		obj.Varietal = *payload.Varietal
-	}
-	if payload.Vineyard != nil {
-		obj.Vineyard = *payload.Vineyard
-	}
-	if payload.Vintage != nil {
-		obj.Vintage = *payload.Vintage
-	}
-
-	err = m.Db.Save(&obj).Error
-	return err
-}
-
 // BottleFromCreateBottlePayload Converts source CreateBottlePayload to target Bottle model
 // only copying the non-nil fields from the source.
 func BottleFromCreateBottlePayload(payload *app.CreateBottlePayload) *Bottle {
@@ -307,6 +230,83 @@ func (m *BottleDB) UpdateFromCreateBottlePayload(ctx context.Context, payload *a
 	obj.Varietal = payload.Varietal
 	obj.Vineyard = payload.Vineyard
 	obj.Vintage = payload.Vintage
+
+	err = m.Db.Save(&obj).Error
+	return err
+}
+
+// BottleFromUpdateBottlePayload Converts source UpdateBottlePayload to target Bottle model
+// only copying the non-nil fields from the source.
+func BottleFromUpdateBottlePayload(payload *app.UpdateBottlePayload) *Bottle {
+	bottle := &Bottle{}
+	if payload.Color != nil {
+		bottle.Color = *payload.Color
+	}
+	if payload.Country != nil {
+		bottle.Country = payload.Country
+	}
+	if payload.Name != nil {
+		bottle.Name = *payload.Name
+	}
+	if payload.Region != nil {
+		bottle.Region = payload.Region
+	}
+	if payload.Review != nil {
+		bottle.Review = payload.Review
+	}
+	if payload.Sweetness != nil {
+		bottle.Sweetness = payload.Sweetness
+	}
+	if payload.Varietal != nil {
+		bottle.Varietal = *payload.Varietal
+	}
+	if payload.Vineyard != nil {
+		bottle.Vineyard = *payload.Vineyard
+	}
+	if payload.Vintage != nil {
+		bottle.Vintage = *payload.Vintage
+	}
+
+	return bottle
+}
+
+// UpdateFromUpdateBottlePayload applies non-nil changes from UpdateBottlePayload to the model and saves it
+func (m *BottleDB) UpdateFromUpdateBottlePayload(ctx context.Context, payload *app.UpdateBottlePayload, id int) error {
+	defer goa.MeasureSince([]string{"goa", "db", "bottle", "updatefromupdateBottlePayload"}, time.Now())
+
+	var obj Bottle
+	err := m.Db.Table(m.TableName()).Where("id = ?", id).Find(&obj).Error
+	if err != nil {
+		goa.LogError(ctx, "error retrieving Bottle", "error", err.Error())
+		return err
+	}
+	if payload.Color != nil {
+		obj.Color = *payload.Color
+	}
+	if payload.Country != nil {
+		obj.Country = payload.Country
+	}
+	if payload.Name != nil {
+		obj.Name = *payload.Name
+	}
+	if payload.Region != nil {
+		obj.Region = payload.Region
+	}
+	if payload.Review != nil {
+		obj.Review = payload.Review
+	}
+	if payload.Sweetness != nil {
+		obj.Sweetness = payload.Sweetness
+	}
+	if payload.Varietal != nil {
+		obj.Varietal = *payload.Varietal
+	}
+	if payload.Vineyard != nil {
+		obj.Vineyard = *payload.Vineyard
+	}
+	if payload.Vintage != nil {
+		obj.Vintage = *payload.Vintage
+	}
 
 	err = m.Db.Save(&obj).Error
 	return err

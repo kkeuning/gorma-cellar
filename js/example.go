@@ -20,6 +20,6 @@ import "github.com/goadesign/goa"
 // Use --noexample to prevent this file from being generated.
 func MountController(service *goa.Service) {
 	// Serve static files under js
-	service.ServeFiles("/js/*filepath", "/Users/bketelsen/src/github.com/goadesign/gorma-cellar/js")
+	service.ServeFiles("/js/*filepath", "/kmk/goa/go/src/github.com/goadesign/gorma-cellar/js")
 	service.LogInfo("mount", "ctrl", "JS", "action", "ServeFiles", "route", "GET /js/*")
 }

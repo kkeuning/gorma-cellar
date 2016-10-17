@@ -170,12 +170,6 @@ func (ctx *ListAccountContext) OKTiny(r AccountTinyCollection) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
-// NotFound sends a HTTP response with status code 404.
-func (ctx *ListAccountContext) NotFound() error {
-	ctx.ResponseData.WriteHeader(404)
-	return nil
-}
-
 // ShowAccountContext provides the account show action context.
 type ShowAccountContext struct {
 	context.Context
@@ -199,6 +193,9 @@ func NewShowAccountContext(ctx context.Context, service *goa.Service) (*ShowAcco
 			rctx.AccountID = accountID
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("accountID", rawAccountID, "integer"))
+		}
+		if rctx.AccountID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`accountID`, rctx.AccountID, 1, true))
 		}
 	}
 	return &rctx, err
@@ -344,6 +341,9 @@ func NewCreateBottleContext(ctx context.Context, service *goa.Service) (*CreateB
 			rctx.AccountID = accountID
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("accountID", rawAccountID, "integer"))
+		}
+		if rctx.AccountID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`accountID`, rctx.AccountID, 1, true))
 		}
 	}
 	return &rctx, err
@@ -588,6 +588,9 @@ func NewDeleteBottleContext(ctx context.Context, service *goa.Service) (*DeleteB
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("accountID", rawAccountID, "integer"))
 		}
+		if rctx.AccountID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`accountID`, rctx.AccountID, 1, true))
+		}
 	}
 	paramBottleID := req.Params["bottleID"]
 	if len(paramBottleID) > 0 {
@@ -643,6 +646,9 @@ func NewListBottleContext(ctx context.Context, service *goa.Service) (*ListBottl
 			rctx.AccountID = accountID
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("accountID", rawAccountID, "integer"))
+		}
+		if rctx.AccountID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`accountID`, rctx.AccountID, 1, true))
 		}
 	}
 	paramYears := req.Params["years"]
@@ -709,6 +715,9 @@ func NewRateBottleContext(ctx context.Context, service *goa.Service) (*RateBottl
 			rctx.AccountID = accountID
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("accountID", rawAccountID, "integer"))
+		}
+		if rctx.AccountID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`accountID`, rctx.AccountID, 1, true))
 		}
 	}
 	paramBottleID := req.Params["bottleID"]
@@ -817,6 +826,9 @@ func NewShowBottleContext(ctx context.Context, service *goa.Service) (*ShowBottl
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("accountID", rawAccountID, "integer"))
 		}
+		if rctx.AccountID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`accountID`, rctx.AccountID, 1, true))
+		}
 	}
 	paramBottleID := req.Params["bottleID"]
 	if len(paramBottleID) > 0 {
@@ -867,7 +879,7 @@ type UpdateBottleContext struct {
 	*goa.RequestData
 	AccountID int
 	BottleID  int
-	Payload   *BottlePayload
+	Payload   *UpdateBottlePayload
 }
 
 // NewUpdateBottleContext parses the incoming request URL and body, performs validations and creates the
@@ -886,6 +898,9 @@ func NewUpdateBottleContext(ctx context.Context, service *goa.Service) (*UpdateB
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("accountID", rawAccountID, "integer"))
 		}
+		if rctx.AccountID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`accountID`, rctx.AccountID, 1, true))
+		}
 	}
 	paramBottleID := req.Params["bottleID"]
 	if len(paramBottleID) > 0 {
@@ -897,6 +912,185 @@ func NewUpdateBottleContext(ctx context.Context, service *goa.Service) (*UpdateB
 		}
 	}
 	return &rctx, err
+}
+
+// updateBottlePayload is the bottle update action payload.
+type updateBottlePayload struct {
+	Color     *string `form:"color,omitempty" json:"color,omitempty" xml:"color,omitempty"`
+	Country   *string `form:"country,omitempty" json:"country,omitempty" xml:"country,omitempty"`
+	Name      *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	Region    *string `form:"region,omitempty" json:"region,omitempty" xml:"region,omitempty"`
+	Review    *string `form:"review,omitempty" json:"review,omitempty" xml:"review,omitempty"`
+	Sweetness *int    `form:"sweetness,omitempty" json:"sweetness,omitempty" xml:"sweetness,omitempty"`
+	Varietal  *string `form:"varietal,omitempty" json:"varietal,omitempty" xml:"varietal,omitempty"`
+	Vineyard  *string `form:"vineyard,omitempty" json:"vineyard,omitempty" xml:"vineyard,omitempty"`
+	Vintage   *int    `form:"vintage,omitempty" json:"vintage,omitempty" xml:"vintage,omitempty"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *updateBottlePayload) Validate() (err error) {
+	if payload.Color != nil {
+		if !(*payload.Color == "red" || *payload.Color == "white" || *payload.Color == "rose" || *payload.Color == "yellow" || *payload.Color == "sparkling") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError(`raw.color`, *payload.Color, []interface{}{"red", "white", "rose", "yellow", "sparkling"}))
+		}
+	}
+	if payload.Country != nil {
+		if len(*payload.Country) < 2 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.country`, *payload.Country, len(*payload.Country), 2, true))
+		}
+	}
+	if payload.Name != nil {
+		if len(*payload.Name) < 2 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.name`, *payload.Name, len(*payload.Name), 2, true))
+		}
+	}
+	if payload.Review != nil {
+		if len(*payload.Review) < 3 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.review`, *payload.Review, len(*payload.Review), 3, true))
+		}
+	}
+	if payload.Review != nil {
+		if len(*payload.Review) > 300 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.review`, *payload.Review, len(*payload.Review), 300, false))
+		}
+	}
+	if payload.Sweetness != nil {
+		if *payload.Sweetness < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`raw.sweetness`, *payload.Sweetness, 1, true))
+		}
+	}
+	if payload.Sweetness != nil {
+		if *payload.Sweetness > 5 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`raw.sweetness`, *payload.Sweetness, 5, false))
+		}
+	}
+	if payload.Varietal != nil {
+		if len(*payload.Varietal) < 4 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.varietal`, *payload.Varietal, len(*payload.Varietal), 4, true))
+		}
+	}
+	if payload.Vineyard != nil {
+		if len(*payload.Vineyard) < 2 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.vineyard`, *payload.Vineyard, len(*payload.Vineyard), 2, true))
+		}
+	}
+	if payload.Vintage != nil {
+		if *payload.Vintage < 1900 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`raw.vintage`, *payload.Vintage, 1900, true))
+		}
+	}
+	if payload.Vintage != nil {
+		if *payload.Vintage > 2020 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`raw.vintage`, *payload.Vintage, 2020, false))
+		}
+	}
+	return
+}
+
+// Publicize creates UpdateBottlePayload from updateBottlePayload
+func (payload *updateBottlePayload) Publicize() *UpdateBottlePayload {
+	var pub UpdateBottlePayload
+	if payload.Color != nil {
+		pub.Color = payload.Color
+	}
+	if payload.Country != nil {
+		pub.Country = payload.Country
+	}
+	if payload.Name != nil {
+		pub.Name = payload.Name
+	}
+	if payload.Region != nil {
+		pub.Region = payload.Region
+	}
+	if payload.Review != nil {
+		pub.Review = payload.Review
+	}
+	if payload.Sweetness != nil {
+		pub.Sweetness = payload.Sweetness
+	}
+	if payload.Varietal != nil {
+		pub.Varietal = payload.Varietal
+	}
+	if payload.Vineyard != nil {
+		pub.Vineyard = payload.Vineyard
+	}
+	if payload.Vintage != nil {
+		pub.Vintage = payload.Vintage
+	}
+	return &pub
+}
+
+// UpdateBottlePayload is the bottle update action payload.
+type UpdateBottlePayload struct {
+	Color     *string `form:"color,omitempty" json:"color,omitempty" xml:"color,omitempty"`
+	Country   *string `form:"country,omitempty" json:"country,omitempty" xml:"country,omitempty"`
+	Name      *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	Region    *string `form:"region,omitempty" json:"region,omitempty" xml:"region,omitempty"`
+	Review    *string `form:"review,omitempty" json:"review,omitempty" xml:"review,omitempty"`
+	Sweetness *int    `form:"sweetness,omitempty" json:"sweetness,omitempty" xml:"sweetness,omitempty"`
+	Varietal  *string `form:"varietal,omitempty" json:"varietal,omitempty" xml:"varietal,omitempty"`
+	Vineyard  *string `form:"vineyard,omitempty" json:"vineyard,omitempty" xml:"vineyard,omitempty"`
+	Vintage   *int    `form:"vintage,omitempty" json:"vintage,omitempty" xml:"vintage,omitempty"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *UpdateBottlePayload) Validate() (err error) {
+	if payload.Color != nil {
+		if !(*payload.Color == "red" || *payload.Color == "white" || *payload.Color == "rose" || *payload.Color == "yellow" || *payload.Color == "sparkling") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError(`raw.color`, *payload.Color, []interface{}{"red", "white", "rose", "yellow", "sparkling"}))
+		}
+	}
+	if payload.Country != nil {
+		if len(*payload.Country) < 2 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.country`, *payload.Country, len(*payload.Country), 2, true))
+		}
+	}
+	if payload.Name != nil {
+		if len(*payload.Name) < 2 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.name`, *payload.Name, len(*payload.Name), 2, true))
+		}
+	}
+	if payload.Review != nil {
+		if len(*payload.Review) < 3 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.review`, *payload.Review, len(*payload.Review), 3, true))
+		}
+	}
+	if payload.Review != nil {
+		if len(*payload.Review) > 300 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.review`, *payload.Review, len(*payload.Review), 300, false))
+		}
+	}
+	if payload.Sweetness != nil {
+		if *payload.Sweetness < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`raw.sweetness`, *payload.Sweetness, 1, true))
+		}
+	}
+	if payload.Sweetness != nil {
+		if *payload.Sweetness > 5 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`raw.sweetness`, *payload.Sweetness, 5, false))
+		}
+	}
+	if payload.Varietal != nil {
+		if len(*payload.Varietal) < 4 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.varietal`, *payload.Varietal, len(*payload.Varietal), 4, true))
+		}
+	}
+	if payload.Vineyard != nil {
+		if len(*payload.Vineyard) < 2 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.vineyard`, *payload.Vineyard, len(*payload.Vineyard), 2, true))
+		}
+	}
+	if payload.Vintage != nil {
+		if *payload.Vintage < 1900 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`raw.vintage`, *payload.Vintage, 1900, true))
+		}
+	}
+	if payload.Vintage != nil {
+		if *payload.Vintage > 2020 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`raw.vintage`, *payload.Vintage, 2020, false))
+		}
+	}
+	return
 }
 
 // NoContent sends a HTTP response with status code 204.
@@ -941,6 +1135,9 @@ func NewWatchBottleContext(ctx context.Context, service *goa.Service) (*WatchBot
 			rctx.AccountID = accountID
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("accountID", rawAccountID, "integer"))
+		}
+		if rctx.AccountID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`accountID`, rctx.AccountID, 1, true))
 		}
 	}
 	paramBottleID := req.Params["bottleID"]
