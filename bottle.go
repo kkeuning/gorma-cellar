@@ -1,10 +1,13 @@
 package main
 
 import (
+	"io"
+
 	"github.com/goadesign/goa"
 	"github.com/goadesign/gorma-cellar/app"
+	"github.com/goadesign/gorma-cellar/models"
+	"github.com/jinzhu/gorm"
 	"golang.org/x/net/websocket"
-	"io"
 )
 
 // BottleController implements the bottle resource.
@@ -19,21 +22,29 @@ func NewBottleController(service *goa.Service) *BottleController {
 
 // Create runs the create action.
 func (c *BottleController) Create(ctx *app.CreateBottleContext) error {
-	// TBD: implement
-	return nil
+	b := models.BottleFromCreateBottlePayload(ctx.Payload)
+	b.AccountID = ctx.AccountID
+	err := bdb.Add(ctx.Context, b)
+	if err != nil {
+		return ErrDatabaseError(err)
+	}
+	ctx.ResponseData.Header().Set("Location", app.BottleHref(ctx.AccountID, b.ID))
+	return ctx.Created()
 }
 
 // Delete runs the delete action.
 func (c *BottleController) Delete(ctx *app.DeleteBottleContext) error {
-	// TBD: implement
-	return nil
+	err := bdb.Delete(ctx.Context, ctx.BottleID)
+	if err != nil {
+		return ErrDatabaseError(err)
+	}
+	return ctx.NoContent()
 }
 
 // List runs the list action.
 func (c *BottleController) List(ctx *app.ListBottleContext) error {
-	// TBD: implement
-	res := app.BottleCollection{}
-	return ctx.OK(res)
+	bottles := bdb.ListBottle(ctx.Context, ctx.AccountID)
+	return ctx.OK(bottles)
 }
 
 // Rate runs the rate action.
@@ -44,9 +55,14 @@ func (c *BottleController) Rate(ctx *app.RateBottleContext) error {
 
 // Show runs the show action.
 func (c *BottleController) Show(ctx *app.ShowBottleContext) error {
-	// TBD: implement
-	res := &app.Bottle{}
-	return ctx.OK(res)
+	bottle, err := bdb.OneBottle(ctx.Context, ctx.BottleID, ctx.AccountID)
+	if err == gorm.ErrRecordNotFound {
+		return ctx.NotFound()
+	} else if err != nil {
+		return ErrDatabaseError(err)
+	}
+	bottle.Href = app.BottleHref(ctx.AccountID, bottle.ID)
+	return ctx.OK(bottle)
 }
 
 // Update runs the update action.
