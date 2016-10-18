@@ -67,8 +67,11 @@ func (c *BottleController) Show(ctx *app.ShowBottleContext) error {
 
 // Update runs the update action.
 func (c *BottleController) Update(ctx *app.UpdateBottleContext) error {
-	// TBD: implement
-	return nil
+	err := bdb.UpdateFromUpdateBottlePayload(ctx, ctx.Payload, ctx.BottleID)
+	if err != nil {
+		return ErrDatabaseError(err)
+	}
+	return ctx.NoContent()
 }
 
 // Watch runs the watch action.
