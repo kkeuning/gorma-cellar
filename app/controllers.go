@@ -159,6 +159,8 @@ func handleAccountOrigin(h goa.Handler) goa.Handler {
 			rw.Header().Set("Access-Control-Allow-Credentials", "true")
 			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
 				// We are handling a preflight request
+				rw.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
+				rw.Header().Set("Access-Control-Allow-Headers", "content-type")
 			}
 			return h(ctx, rw, req)
 		}
@@ -360,6 +362,8 @@ func handleBottleOrigin(h goa.Handler) goa.Handler {
 			rw.Header().Set("Access-Control-Allow-Credentials", "true")
 			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
 				// We are handling a preflight request
+				rw.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
+				rw.Header().Set("Access-Control-Allow-Headers", "content-type")
 			}
 			return h(ctx, rw, req)
 		}
@@ -451,91 +455,8 @@ func handleHealthOrigin(h goa.Handler) goa.Handler {
 			rw.Header().Set("Access-Control-Allow-Credentials", "true")
 			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
 				// We are handling a preflight request
-			}
-			return h(ctx, rw, req)
-		}
-
-		return h(ctx, rw, req)
-	}
-}
-
-// JsController is the controller interface for the Js actions.
-type JsController interface {
-	goa.Muxer
-	goa.FileServer
-}
-
-// MountJsController "mounts" a Js resource controller on the given service.
-func MountJsController(service *goa.Service, ctrl JsController) {
-	initService(service)
-	var h goa.Handler
-
-	h = ctrl.FileHandler("/js/*filepath", "public/js")
-	h = handleJsOrigin(h)
-	service.Mux.Handle("GET", "/js/*filepath", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Js", "files", "public/js", "route", "GET /js/*filepath")
-
-	h = ctrl.FileHandler("/js/", "public/js/index.html")
-	h = handleJsOrigin(h)
-	service.Mux.Handle("GET", "/js/", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Js", "files", "public/js/index.html", "route", "GET /js/")
-}
-
-// handleJsOrigin applies the CORS response headers corresponding to the origin.
-func handleJsOrigin(h goa.Handler) goa.Handler {
-	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		origin := req.Header.Get("Origin")
-		if origin == "" {
-			// Not a CORS request
-			return h(ctx, rw, req)
-		}
-		if cors.MatchOrigin(origin, "*") {
-			ctx = goa.WithLogContext(ctx, "origin", origin)
-			rw.Header().Set("Access-Control-Allow-Origin", "*")
-			rw.Header().Set("Access-Control-Allow-Credentials", "false")
-			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
-				// We are handling a preflight request
-				rw.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-			}
-			return h(ctx, rw, req)
-		}
-
-		return h(ctx, rw, req)
-	}
-}
-
-// PublicController is the controller interface for the Public actions.
-type PublicController interface {
-	goa.Muxer
-	goa.FileServer
-}
-
-// MountPublicController "mounts" a Public resource controller on the given service.
-func MountPublicController(service *goa.Service, ctrl PublicController) {
-	initService(service)
-	var h goa.Handler
-
-	h = ctrl.FileHandler("/ui", "public/html/index.html")
-	h = handlePublicOrigin(h)
-	service.Mux.Handle("GET", "/ui", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Public", "files", "public/html/index.html", "route", "GET /ui")
-}
-
-// handlePublicOrigin applies the CORS response headers corresponding to the origin.
-func handlePublicOrigin(h goa.Handler) goa.Handler {
-	return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		origin := req.Header.Get("Origin")
-		if origin == "" {
-			// Not a CORS request
-			return h(ctx, rw, req)
-		}
-		if cors.MatchOrigin(origin, "*") {
-			ctx = goa.WithLogContext(ctx, "origin", origin)
-			rw.Header().Set("Access-Control-Allow-Origin", "*")
-			rw.Header().Set("Access-Control-Allow-Credentials", "false")
-			if acrm := req.Header.Get("Access-Control-Request-Method"); acrm != "" {
-				// We are handling a preflight request
-				rw.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+				rw.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
+				rw.Header().Set("Access-Control-Allow-Headers", "content-type")
 			}
 			return h(ctx, rw, req)
 		}

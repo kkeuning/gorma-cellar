@@ -33,7 +33,7 @@ type Settings struct {
 	DatabaseName     string `envconfig:"gorma_cellar_db_name" default:"gorma"`
 	DatabasePort     int    `envconfig:"gorma_cellar_db_port" default:"5432"`
 	MaxOpenConns     int    `envconfig:"gorma_cellar_db_max_open" default:"100"`
-	MaxIdleConns     int    `envconfig:"gorma_cellar_db_max_idle" default:"5"`
+	MaxIdleConns     int    `envconfig:"gorma_cellar_db_max_idle" default:"10"`
 	Debug            bool   `envconfig:"gorma_cellar_debug" default:"false"`
 }
 
@@ -67,7 +67,8 @@ func main() {
 
 	adb = models.NewAccountDB(db)
 	bdb = models.NewBottleDB(db)
-	db.DB().SetMaxOpenConns(50)
+	db.DB().SetMaxOpenConns(settings.MaxOpenConns)
+	db.DB().SetMaxIdleConns(settings.MaxIdleConns)
 	// Create service
 	service := goa.New("API")
 	logger := log15.New()
